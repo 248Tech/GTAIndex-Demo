@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 HUD and wanted system explained — GTAIndex · Fan Project demo</title>
+<meta name="description" content="Every part of the GTA 6 HUD from the Extended Look — the new wanted system that tracks your description, the stat bars, the Weapons and Items wheels, and what those two money counters really mean.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides" aria-current="page">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<article class="rec" id="article">
+
+  
+  <section class="rec-hero ">
+          <div class="rec-hero__bg"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hero-diverse-640.webp 640w, /GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hero-diverse-1280.webp 1280w" sizes="100vw">
+    <img src="/GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hero-diverse-1280.jpg 1280w"
+       sizes="100vw" alt="Lucia driving with police lights behind her"
+               loading="eager" decoding="async" class="">
+</picture>
+</div>
+      <div class="rec-hero__scrim"></div>
+        <div class="rec-hero__inner">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/GTAIndex-Demo/guides">Guides</a> <span>/</span> <span aria-current="page">GTA 6 HUD and wanted system explained</span></nav>
+      <div class="rec-eyebrow">
+        <span class="chip">Article</span>
+        <span class="chip">30 Aug 2026</span>      </div>
+      <h1 class="display rec-title">GTA 6 HUD and wanted system explained</h1>
+      <p class="rec-sub">Every part of the GTA 6 HUD from the Extended Look — the new wanted system that tracks your description, the stat bars, the Weapons and Items wheels, and what those two money counters really mean.</p>    </div>
+  </section>
+
+  
+  <section class="section" style="padding-top:clamp(28px,4vw,48px)">
+    <div class="wrap article-wrap">
+      <div class="prose article-body reveal"><p>The GTA VI <a href="/GTAIndex-Demo/guides/gta-6-netflix-extended-look-everything-confirmed">Extended Look</a> gave us the clearest view yet of the in-game HUD — and it points to a much smarter police system. Here's what each part appears to mean. We mark what's shown on screen versus what's still our interpretation.</p>
+<p><img src="/GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hud-1280.jpg" alt="The Grand Theft Auto VI HUD from the Extended Look: stat bars top-left, the weapon wheel centre, and the wanted meter and cash top-right." /></p>
+<p><em>The full HUD — Health, Stamina and Focus (top-left); the six-star wanted meter and two money counters (top-right); the weapon wheel (centre).</em></p>
+<h2>The wanted system: police track <em>you</em>, not just your location</h2>
+<p>The <strong>wanted meter</strong> sits top-right, and it now tops out at <strong>six stars</strong> — a return to the six-star maximum last used before Grand Theft Auto V, which capped it at five. The bigger change, though, is the row of small <strong>identification icons</strong> beneath the stars — they represent what the police currently know about you:</p>
+<ul>
+<li><strong>Witnesses</strong> (two heads) — people who saw the crime and can describe you.</li>
+<li><strong>Your description / face</strong> (a single head) — the police have a description of your appearance.</li>
+<li><strong>Your clothing</strong> (a hanger) — they're looking for someone dressed like you.</li>
+<li><strong>Your vehicle</strong> (a car) — they're hunting the car you were last seen in.</li>
+<li><strong>Surveillance</strong> (a camera) — CCTV has footage of you. Taking cameras out <em>before</em> a crime cuts how much the police can pin on you.</li>
+<li><strong>Weapon</strong> (a gun) — you're flagged as <strong>armed</strong>.</li>
+</ul>
+<p>Each icon is a separate thread of evidence — and you can cut them one by one. Silence the witnesses or leave their area, disable the cameras, change clothes, ditch or swap the car, and put your gun away; as each lead clears, the police's picture of you falls apart.</p>
+<p>The wanted stars act as a live indicator of what the police currently know about you:</p>
+<ul>
+<li><strong>Hollow Stars:</strong> A crime has been reported, but the police have not yet identified you.</li>
+<li><strong>Solid White Stars:</strong> The police are actively chasing you and have a direct line of sight.</li>
+<li><strong>Flashing White Stars:</strong> You have broken their line of sight, but they are still pursuing you.</li>
+<li><strong>Red Stars:</strong> The police have lost sight of you, but you remain inside the “heat zone” surrounding the crime scene, where officers are searching. At six stars, this search area expands across the entire map.</li>
+</ul>
+<p><img src="/GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/stars-1280.jpg" alt="GTA VI wanted stars showing the different police detection states, along with witness, clothing, suspect-description and vehicle indicators." /></p>
+<p><em>Hollow stars mean you have not yet been identified. Solid white stars indicate an active police visual, flashing white stars mean the police are still pursuing you without direct sight, and red stars mean they are searching the surrounding area.</em></p>
+<p>The system appears to involve more than simply waiting for a search zone to disappear. Police can reportedly track details about your appearance, clothing, and vehicle. In the footage, one of these indicators disappears when the player abandons their car, suggesting that changing clothes or ditching and swapping vehicles may remove individual leads.</p>
+<p>The likely escape strategy is therefore to break the police’s line of sight, leave the heat zone, and change anything matching your description. This resembles <em>Red Dead Redemption 2’s</em> behaviour-based evasion system, where escaping depends partly on how the player reacts after committing a crime.</p>
+<blockquote>
+<p><strong>What is confirmed:</strong> The Extended Look footage shows a six-star wanted meter and indicators associated with witnesses, clothing, the suspect’s description, and their vehicle. The precise meaning of each star appearance and exactly how every identification indicator is cleared have not yet been officially explained.</p>
+</blockquote>
+<h2>The stat bars (top-left)</h2>
+<p>Three confirmed meters sit on the left:</p>
+<ul>
+<li><strong>Health</strong> (heart).</li>
+<li><strong>Stamina</strong> (lightning bolt).</li>
+<li><strong>Focus</strong> (eye icon).</li>
+</ul>
+<p>Health, Stamina and Focus can be developed through activities, while food and drinks provide temporary boosts. Some consumables can push Health above its normal limit until that extra reserve is lost. Focus slows time in combat, can reveal weak points on NPCs and vehicles, and can also highlight accessible doors while exploring.</p>
+<p>Rockstar has not published the final numerical values, upgrade thresholds, or every effect tied to each stat. GTAIndex therefore treats the three meters themselves—and their broad roles—as confirmed, without inventing a full survival system around them.</p>
+<h2>Weapons and Items — two separate wheels</h2>
+<p>GTA VI splits selection into a <strong>Weapons</strong> wheel and an <strong>Items</strong> wheel (note the tab toggle at the top). The weapon wheel shows a <strong>Pistol</strong>, a <strong>Molotov</strong> (filed under Explosives), <strong>fists / melee</strong>, and what looks like <strong>binoculars</strong>. Keeping items on their own wheel means usable gear no longer clutters weapon selection.</p>
+<p>Quick-use consumables sit bottom-left. Reporting on the Extended Look identifies healing items including <strong>Zombix</strong> (restores health — with an on-screen warning that it becomes <em>less</em> effective if overused) and <strong>EpiPen</strong>-style injectors. The two bottles in the quick slots match these: a health item and an injector.</p>
+<h2>The two money counters</h2>
+<p>The HUD shows <strong>two money values</strong>. These are reported to be <strong>cash on hand</strong> versus a <strong>bank balance</strong> — not two different currencies.</p>
+<p><strong>On the &quot;crypto&quot; rumour:</strong> you may have seen claims that GTA VI pays you in cryptocurrency you can cash out for real money. <strong>Rockstar has confirmed nothing of the sort.</strong> Those claims trace back to leakers promoting their own coin — treat them as marketing, not fact. More in our <a href="/GTAIndex-Demo/discover/gta-6-crypto-currency-claims">Discover note</a>.</p>
+<h2>Confirmed vs unconfirmed</h2>
+<ul>
+<li><strong>Shown in the Extended Look:</strong> the <strong>six-star</strong> wanted meter with description / clothing / vehicle icons, the three stat bars, the Weapons and Items wheels and their contents, two money counters, and the Zombix / EpiPen healing items.</li>
+<li><strong>Not confirmed:</strong> the fine detail of how each identification icon clears, the final stat values and upgrade thresholds, the exact rules for every wanted identifier, and anything about cryptocurrency.</li>
+</ul>
+
+
+<h2>Verified HUD, Focus and wanted additions</h2>
+<p>The HUD includes <strong>Health</strong>, <strong>Stamina</strong> and <strong>Focus</strong>. Activities can permanently raise these stats, while food and drinks provide temporary boosts; some consumables can exceed the normal health limit until that extra reserve is lost. Focus slows time for combat and can reveal vehicle weak points; it can also be used while driving.</p>
+<p>HUD options include showing or hiding elements while on foot, replacing the map with a compass, and disabling Criminal Profile notifications. Mission waypoints are reported in magenta, while custom waypoints use a light teal/cyan colour.</p>
+
+<h2>Controls, prompts and exploration Focus</h2>
+<p>Character movement is reported as smoother and less weighty than earlier preview impressions, with sprint mapped to pressing <strong>L3</strong> on the PlayStation layout. The action-prompt interface has also been refreshed and supports numerous custom options.</p>
+<p>Focus has an exploration role alongside its combat use: activating it can highlight accessible doors, helping players identify fully modelled interiors. This is a discovery aid, not confirmation that every highlighted building is enterable or that every interior behaves the same way.</p>
+
+</div>
+
+              <p class="source">Source:
+          <a href="https://www.gamesradar.com/games/grand-theft-auto/gta-6-wanted-system-goes-up-to-6-stars-and-lets-police-track-your-face-your-clothes-and-your-car/" rel="nofollow noopener" target="_blank">Verified HUD update, 2 Sep 2026 — creator-preview information supplied to GTAIndex.</a>        </p>
+            <p class="muted" style="font-size:13px">Last verified 2 Sep 2026.</p>    </div>
+
+      </section>
+</article>
+
+<style>
+  .read-progress{position:fixed;top:var(--header-h);left:0;height:3px;width:0;z-index:1200;
+    background:linear-gradient(90deg,var(--sunset-pink),var(--sun-gold));box-shadow:0 0 10px rgba(240,90,157,.5)}
+  .article-wrap{max-width:740px}
+  .article-body{font-size:clamp(1.02rem,1.15vw,1.14rem);line-height:1.75}
+  .article-body > p:first-of-type::first-letter{font-family:'Bebas Neue',Impact,sans-serif;
+    float:left;font-size:3.4em;line-height:.8;padding:6px 12px 0 0;color:var(--sun-gold)}
+  .article-body h2{font-size:clamp(1.4rem,2.4vw,1.9rem);margin:1.8em 0 .5em;letter-spacing:.005em}
+  .article-body h3{font-size:clamp(1.15rem,1.8vw,1.4rem);margin:1.5em 0 .4em}
+  .article-body blockquote{margin:1.4em 0;padding:2px 0 2px 20px;border-left:3px solid var(--sunset-pink);
+    font-size:1.08em;font-style:italic;color:var(--paper)}
+  .article-body img{border-radius:12px;margin:1.4em 0}
+  .article-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.4em 0;
+    font-size:.92em;line-height:1.5;-webkit-overflow-scrolling:touch}
+  .article-body th,.article-body td{padding:10px 14px;text-align:left;vertical-align:top;
+    border-bottom:1px solid rgba(255,255,255,.12)}
+  .article-body th{font-weight:800;color:var(--sun-gold);white-space:nowrap;border-bottom-color:rgba(255,255,255,.28)}
+  .article-body tbody tr:nth-child(odd){background:rgba(255,255,255,.035)}
+</style>
+
+
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script>
+    (function () {
+      var bar = document.getElementById('readProgress'), art = document.getElementById('article');
+      if (!bar || !art) return;
+      function upd() {
+        var r = art.getBoundingClientRect(), vh = window.innerHeight;
+        var scrolled = Math.min(Math.max(-r.top, 0), Math.max(r.height - vh, 1));
+        bar.style.width = (scrolled / Math.max(r.height - vh, 1) * 100).toFixed(1) + '%';
+      }
+      upd();
+      window.addEventListener('scroll', upd, { passive: true });
+      window.addEventListener('resize', upd, { passive: true });
+    })();
+  </script>
+</body>
+</html>

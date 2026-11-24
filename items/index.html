@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 Items — Food, Drink &amp; Consumables — GTAIndex · Fan Project demo</title>
+<meta name="description" content="Food, drink, and consumables of Grand Theft Auto VI — added as they’re confirmed.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+    <section class="section list-page">
+    <div class="wrap">
+      <div class="list-head">
+        <span class="eyebrow">Database</span>
+        <h1 class="display list-title">Items of Leonida <span class="list-count" id="listCount">28</span></h1>
+        <p class="list-blurb">Food, drink, and consumables of Grand Theft Auto VI — added as they’re confirmed.</p>
+      </div>
+
+              
+        <div class="list-toolbar">
+          <div class="list-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M16.5 16.5 21 21"></path></svg>
+            <input type="search" id="listSearch" placeholder="Filter items of leonida…" aria-label="Filter items of leonida">
+          </div>
+                      <div class="list-chips">
+              <button type="button" class="list-chip is-on" data-kind="">All</button>
+                              <button type="button" class="list-chip" data-kind="Beer">Beer</button>
+                              <button type="button" class="list-chip" data-kind="Beverage">Beverage</button>
+                              <button type="button" class="list-chip" data-kind="Bottled water">Bottled water</button>
+                              <button type="button" class="list-chip" data-kind="Cigarettes">Cigarettes</button>
+                              <button type="button" class="list-chip" data-kind="Coffee">Coffee</button>
+                              <button type="button" class="list-chip" data-kind="Energy drink">Energy drink</button>
+                              <button type="button" class="list-chip" data-kind="Energy food">Energy food</button>
+                              <button type="button" class="list-chip" data-kind="Energy soda">Energy soda</button>
+                              <button type="button" class="list-chip" data-kind="Fast food">Fast food</button>
+                              <button type="button" class="list-chip" data-kind="Healing">Healing</button>
+                              <button type="button" class="list-chip" data-kind="Ice cream">Ice cream</button>
+                              <button type="button" class="list-chip" data-kind="Snack">Snack</button>
+                              <button type="button" class="list-chip" data-kind="Spirits">Spirits</button>
+                          </div>
+                    <label class="list-sort"><span>Sort</span>
+            <select id="listSort">
+              <option value="featured">Featured</option>
+              <option value="az">A–Z</option>
+              <option value="za">Z–A</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="recordcards list-grid" id="listGrid">
+                                  <a href="/GTAIndex-Demo/items/zombix" class="recordcard rec-rev" data-name="zombix" data-kind="Healing">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14xqdm0d6z70x56egveyjz1/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14xqdm0d6z70x56egveyjz1/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14xqdm0d6z70x56egveyjz1/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14xqdm0d6z70x56egveyjz1/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14xqdm0d6z70x56egveyjz1/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Zombix"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Healing</span>                <span class="recordcard__name">Zombix</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/epipen" class="recordcard rec-rev" data-name="epipen" data-kind="Healing">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="EpiPen"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Healing</span>                <span class="recordcard__name">EpiPen</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/sprunk" class="recordcard rec-rev" data-name="sprunk" data-kind="Beverage">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14ygzccfn69t2sh0q0e5e23/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14ygzccfn69t2sh0q0e5e23/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14ygzccfn69t2sh0q0e5e23/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14ygzccfn69t2sh0q0e5e23/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14ygzccfn69t2sh0q0e5e23/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Sprunk"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beverage</span>                <span class="recordcard__name">Sprunk</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/ecola" class="recordcard rec-rev" data-name="ecola" data-kind="Beverage">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="eCola"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beverage</span>                <span class="recordcard__name">eCola</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/pisswasser" class="recordcard rec-rev" data-name="pißwasser" data-kind="Beer">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14ynh79vxy03pdeknrcwsvw/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14ynh79vxy03pdeknrcwsvw/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14ynh79vxy03pdeknrcwsvw/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14ynh79vxy03pdeknrcwsvw/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14ynh79vxy03pdeknrcwsvw/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Pißwasser"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beer</span>                <span class="recordcard__name">Pißwasser</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/cluckin-bell" class="recordcard rec-rev" data-name="cluckin’ bell" data-kind="Fast food">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14ymq5qqjwmc3m6fcvq51mt/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14ymq5qqjwmc3m6fcvq51mt/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14ymq5qqjwmc3m6fcvq51mt/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14ymq5qqjwmc3m6fcvq51mt/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14ymq5qqjwmc3m6fcvq51mt/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Cluckin’ Bell"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Fast food</span>                <span class="recordcard__name">Cluckin’ Bell</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/burger-shot" class="recordcard rec-rev" data-name="burger shot" data-kind="Fast food">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14ys2hgdz34bwy7de84k0q8/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14ys2hgdz34bwy7de84k0q8/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14ys2hgdz34bwy7de84k0q8/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14ys2hgdz34bwy7de84k0q8/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14ys2hgdz34bwy7de84k0q8/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Burger Shot"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Fast food</span>                <span class="recordcard__name">Burger Shot</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/up-n-atom-burger" class="recordcard rec-rev" data-name="up-n-atom burger" data-kind="Fast food">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14yvbf1k6m59ck1xaq2xskz/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14yvbf1k6m59ck1xaq2xskz/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14yvbf1k6m59ck1xaq2xskz/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14yvbf1k6m59ck1xaq2xskz/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14yvbf1k6m59ck1xaq2xskz/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Up-n-Atom Burger"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Fast food</span>                <span class="recordcard__name">Up-n-Atom Burger</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/well-stacked-pizza" class="recordcard rec-rev" data-name="well stacked pizza co." data-kind="Fast food">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14yx9jphpnb7jxbspjqxp3a/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14yx9jphpnb7jxbspjqxp3a/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14yx9jphpnb7jxbspjqxp3a/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14yx9jphpnb7jxbspjqxp3a/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14yx9jphpnb7jxbspjqxp3a/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Well Stacked Pizza Co."
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Fast food</span>                <span class="recordcard__name">Well Stacked Pizza Co.</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/redwood" class="recordcard rec-rev" data-name="redwood" data-kind="Cigarettes">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14yzcvc7tkwqny4582nanrg/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14yzcvc7tkwqny4582nanrg/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14yzcvc7tkwqny4582nanrg/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14yzcvc7tkwqny4582nanrg/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14yzcvc7tkwqny4582nanrg/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Redwood"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Cigarettes</span>                <span class="recordcard__name">Redwood</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/bean-machine" class="recordcard rec-rev" data-name="bean machine" data-kind="Coffee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14yeqb336z1s5wp7kadjvjc/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14yeqb336z1s5wp7kadjvjc/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14yeqb336z1s5wp7kadjvjc/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14yeqb336z1s5wp7kadjvjc/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14yeqb336z1s5wp7kadjvjc/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bean Machine"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Coffee</span>                <span class="recordcard__name">Bean Machine</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/cherry-popper" class="recordcard rec-rev" data-name="cherry popper" data-kind="Ice cream">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14ye7wqbx3ydr7asm7j01e3/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14ye7wqbx3ydr7asm7j01e3/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14ye7wqbx3ydr7asm7j01e3/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14ye7wqbx3ydr7asm7j01e3/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14ye7wqbx3ydr7asm7j01e3/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Cherry Popper"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Ice cream</span>                <span class="recordcard__name">Cherry Popper</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/rusty-browns" class="recordcard rec-rev" data-name="rusty brown’s" data-kind="Fast food">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Rusty Brown’s"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Fast food</span>                <span class="recordcard__name">Rusty Brown’s</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/logger-beer" class="recordcard rec-rev" data-name="logger beer" data-kind="Beer">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/logger-beer/hero-640.webp 640w, /GTAIndex-Demo/media/items/logger-beer/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/logger-beer/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/logger-beer/hero-640.jpg 640w, /GTAIndex-Demo/media/items/logger-beer/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Logger Beer product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beer</span>                <span class="recordcard__name">Logger Beer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/lavazas-beer" class="recordcard rec-rev" data-name="lavazas beer" data-kind="Beer">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/lavazas-beer/hero-640.webp 640w, /GTAIndex-Demo/media/items/lavazas-beer/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/lavazas-beer/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/lavazas-beer/hero-640.jpg 640w, /GTAIndex-Demo/media/items/lavazas-beer/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Lavazas Beer product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beer</span>                <span class="recordcard__name">Lavazas Beer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/blitz-berry-smoothie" class="recordcard rec-rev" data-name="blitz berry smoothie" data-kind="Beverage">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/blitz-berry-smoothie/hero-640.webp 640w, /GTAIndex-Demo/media/items/blitz-berry-smoothie/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/blitz-berry-smoothie/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/blitz-berry-smoothie/hero-640.jpg 640w, /GTAIndex-Demo/media/items/blitz-berry-smoothie/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Blitz Berry Smoothie product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beverage</span>                <span class="recordcard__name">Blitz Berry Smoothie</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/blitz-green-smoothie" class="recordcard rec-rev" data-name="blitz green smoothie" data-kind="Beverage">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/blitz-green-smoothie/hero-640.webp 640w, /GTAIndex-Demo/media/items/blitz-green-smoothie/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/blitz-green-smoothie/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/blitz-green-smoothie/hero-640.jpg 640w, /GTAIndex-Demo/media/items/blitz-green-smoothie/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Blitz Green Smoothie product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beverage</span>                <span class="recordcard__name">Blitz Green Smoothie</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/protein-shake" class="recordcard rec-rev" data-name="protein shake" data-kind="Beverage">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/protein-shake/hero-640.webp 640w, /GTAIndex-Demo/media/items/protein-shake/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/protein-shake/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/protein-shake/hero-640.jpg 640w, /GTAIndex-Demo/media/items/protein-shake/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Protein Shake product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beverage</span>                <span class="recordcard__name">Protein Shake</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/ps-and-qs" class="recordcard rec-rev" data-name="p&#039;s &amp; q&#039;s" data-kind="Snack">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/ps-and-qs/hero-640.webp 640w, /GTAIndex-Demo/media/items/ps-and-qs/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/ps-and-qs/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/ps-and-qs/hero-640.jpg 640w, /GTAIndex-Demo/media/items/ps-and-qs/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="P&#039;s &amp; Q&#039;s product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Snack</span>                <span class="recordcard__name">P&#039;s &amp; Q&#039;s</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/meteorite-bar" class="recordcard rec-rev" data-name="meteorite bar" data-kind="Snack">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/meteorite-bar/hero-640.webp 640w, /GTAIndex-Demo/media/items/meteorite-bar/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/meteorite-bar/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/meteorite-bar/hero-640.jpg 640w, /GTAIndex-Demo/media/items/meteorite-bar/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Meteorite Bar product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Snack</span>                <span class="recordcard__name">Meteorite Bar</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/egochaser-energy-bar" class="recordcard rec-rev" data-name="egochaser energy bar" data-kind="Energy food">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/egochaser-energy-bar/hero-640.webp 640w, /GTAIndex-Demo/media/items/egochaser-energy-bar/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/egochaser-energy-bar/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/egochaser-energy-bar/hero-640.jpg 640w, /GTAIndex-Demo/media/items/egochaser-energy-bar/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="EgoChaser Energy Bar product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Energy food</span>                <span class="recordcard__name">EgoChaser Energy Bar</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/junk-energy" class="recordcard rec-rev" data-name="junk energy" data-kind="Energy drink">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/junk-energy/hero-640.webp 640w, /GTAIndex-Demo/media/items/junk-energy/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/junk-energy/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/junk-energy/hero-640.jpg 640w, /GTAIndex-Demo/media/items/junk-energy/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Junk Energy product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Energy drink</span>                <span class="recordcard__name">Junk Energy</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/raine" class="recordcard rec-rev" data-name="raine" data-kind="Bottled water">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/raine/hero-640.webp 640w, /GTAIndex-Demo/media/items/raine/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/raine/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/raine/hero-640.jpg 640w, /GTAIndex-Demo/media/items/raine/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Raine product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Bottled water</span>                <span class="recordcard__name">Raine</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/taco-bomb" class="recordcard rec-rev" data-name="taco bomb" data-kind="Fast food">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/taco-bomb/hero-640.webp 640w, /GTAIndex-Demo/media/items/taco-bomb/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/taco-bomb/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/taco-bomb/hero-640.jpg 640w, /GTAIndex-Demo/media/items/taco-bomb/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Taco Bomb product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Fast food</span>                <span class="recordcard__name">Taco Bomb</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/sprunk-extreme" class="recordcard rec-rev" data-name="sprunk extreme" data-kind="Energy soda">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/sprunk-extreme/hero-640.webp 640w, /GTAIndex-Demo/media/items/sprunk-extreme/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/sprunk-extreme/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/sprunk-extreme/hero-640.jpg 640w, /GTAIndex-Demo/media/items/sprunk-extreme/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Sprunk Extreme product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Energy soda</span>                <span class="recordcard__name">Sprunk Extreme</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/macbeth-whisky" class="recordcard rec-rev" data-name="macbeth whisky" data-kind="Spirits">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/macbeth-whisky/hero-640.webp 640w, /GTAIndex-Demo/media/items/macbeth-whisky/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/macbeth-whisky/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/macbeth-whisky/hero-640.jpg 640w, /GTAIndex-Demo/media/items/macbeth-whisky/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Macbeth Whisky product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Spirits</span>                <span class="recordcard__name">Macbeth Whisky</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/patriot-beer" class="recordcard rec-rev" data-name="patriot beer" data-kind="Beer">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/patriot-beer/hero-640.webp 640w, /GTAIndex-Demo/media/items/patriot-beer/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/patriot-beer/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/patriot-beer/hero-640.jpg 640w, /GTAIndex-Demo/media/items/patriot-beer/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Patriot Beer product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Beer</span>                <span class="recordcard__name">Patriot Beer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/items/debonaire" class="recordcard rec-rev" data-name="debonaire" data-kind="Cigarettes">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/debonaire/hero-640.webp 640w, /GTAIndex-Demo/media/items/debonaire/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/debonaire/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/debonaire/hero-640.jpg 640w, /GTAIndex-Demo/media/items/debonaire/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Debonaire product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Cigarettes</span>                <span class="recordcard__name">Debonaire</span>
+              </div>
+            </a>
+                  </div>
+        <p class="list-empty-msg" id="listEmptyMsg" hidden>No items of leonida match your filter.</p>
+        <p class="muted-note">Artwork &copy; Rockstar Games — used for identification and commentary. See <a href="/GTAIndex-Demo/about#credits">credits &amp; takedown</a>.</p>
+          </div>
+  </section>
+
+  
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script src="/GTAIndex-Demo/assets/js/list.js"></script>
+</body>
+</html>

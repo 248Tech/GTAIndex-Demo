@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Official GTA 6 merch: the Rockstar Store collection and collector’s box — GTAIndex · Fan Project demo</title>
+<meta name="description" content="Rockstar’s Grand Theft Auto VI Collection is out: VI and Macca the Gator tees, caps, a Vice City Zippo and money clip, keychain, totes and stickers — plus the Goodtime State collector’s box arriving November 19.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides" aria-current="page">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<article class="rec" id="article">
+
+  
+  <section class="rec-hero ">
+          <div class="rec-hero__bg"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/hero-640.webp 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/hero-1280.webp 1280w" sizes="100vw">
+    <img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/hero-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/hero-1280.jpg 1280w"
+       sizes="100vw" alt="GTA VI merch from the Rockstar Store: blue VI tee, the full collection and VI caps"
+               loading="eager" decoding="async" class="">
+</picture>
+</div>
+      <div class="rec-hero__scrim"></div>
+        <div class="rec-hero__inner">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/GTAIndex-Demo/guides">Guides</a> <span>/</span> <span aria-current="page">Official GTA 6 merch: the Rockstar Store collection and collector’s box</span></nav>
+      <div class="rec-eyebrow">
+        <span class="chip">News</span>
+        <span class="chip">12 Oct 2026</span>      </div>
+      <h1 class="display rec-title">Official GTA 6 merch: the Rockstar Store collection and collector’s box</h1>
+      <p class="rec-sub">Rockstar’s Grand Theft Auto VI Collection is out: VI and Macca the Gator tees, caps, a Vice City Zippo and money clip, keychain, totes and stickers — plus the Goodtime State collector’s box arriving November 19.</p>    </div>
+  </section>
+
+  
+  <section class="section" style="padding-top:clamp(28px,4vw,48px)">
+    <div class="wrap article-wrap">
+      <div class="prose article-body reveal"><p>Rockstar has opened the merch floodgates ahead of launch. On <strong>October 8, 2026</strong> it released the official <strong>Grand Theft Auto VI Collection</strong> at the Rockstar Store, two weeks after opening pre-orders for a limited-edition collector's box. Here's everything in both.</p>
+<p><img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/collection-flatlay-1280.jpg" alt="The Grand Theft Auto VI Collection: tees, caps, tote, lighter, keychain, money clip and stickers" /></p>
+<h2>The Grand Theft Auto VI Collection (October 8)</h2>
+<p>Available exclusively from the Rockstar Store:</p>
+<ul>
+<li><strong>VI and Rockstar Games logo tees</strong> — heavyweight cotton in <strong>black, blue and pink</strong>, with either the VI logo or the classic Rockstar logo.</li>
+<li><strong>Goodtime State and Macca the Gator tees</strong> — &quot;Goodtime State Gear&quot; inspired by the styles Jason and Lucia wear in the Ultimate Edition, featuring characters from Leonida's hit TV show <em>Macca the Gator</em>.</li>
+<li><strong>Flexfit caps</strong> — stretch-fit cotton caps with palm trees inside the VI logo, plus the original Rockstar cap in GTA VI colours. The caps are <strong>pre-order</strong>.</li>
+<li><strong>Keychain</strong> — chrome, with the Rockstar logo laser-etched on one side and the palm-tree VI logo on the other.</li>
+<li><strong>Vice City money clip</strong> — two-sided chrome with the classic Vice City logo and the VI logo.</li>
+<li><strong>Vice City Zippo lighter</strong> — refillable, polished chrome.</li>
+<li><strong>Canvas tote bags</strong> and <strong>two sets of vinyl stickers</strong>.</li>
+</ul>
+<p><img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/vi-logo-tee-blue-1280.jpg" alt="Blue VI logo tee with the palm-tree VI print" /></p>
+<p><img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/macca-the-gator-tee-1280.jpg" alt="Macca the Gator &quot;Vice City Leonida&quot; tee print" /></p>
+<p><img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/vi-flexfit-caps-1280.jpg" alt="GTA VI Flexfit caps in black, pink and blue" /></p>
+<p><img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/zippo-money-clip-keychain-1280.jpg" alt="The Vice City Zippo lighter, money clip and VI keychain" /></p>
+<p>Rockstar says <strong>more items are coming</strong> to the collection. The store also has a new <strong>wishlist</strong> feature, and Rockstar mailing-list subscribers can get restock and sale alerts.</p>
+<h2>The Goodtime State – Vice City Collection (collector's box)</h2>
+<p>Announced on <strong>September 24, 2026</strong>, this is a <strong>limited-edition collector's box</strong> that arrives on <strong>November 19</strong> and is available to pre-order <strong>while supplies last</strong>. Inspired by <em>Macca the Gator</em>, it includes:</p>
+<ul>
+<li>a <strong>6-inch Macca the Gator figure</strong> with a stash compartment</li>
+<li>matte black <strong>GTAVI Oakley Frogskins</strong> sunglasses with Prizm Sapphire lenses</li>
+<li>a <strong>New Era 9FORTY A-Frame snapback</strong> with Vice City Leonida details</li>
+<li>a <strong>Macca the Gator magnetic mirror</strong></li>
+<li>a <strong>Vice City swizzle spoon</strong></li>
+<li>a <strong>Vice City razor blade keychain</strong></li>
+<li>a <strong>Leonida Keys crossbody bag</strong></li>
+<li>a <strong>Chunkee the Manatee shot glass</strong></li>
+<li>a <strong>Leonida Keys enamel pin set</strong> in a custom metal tin</li>
+<li><strong>premium stickers</strong> in a stash bag</li>
+<li>a <strong>double-sided souvenir poster</strong> of the full Leonida landscape</li>
+</ul>
+<p><img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/goodtime-state-vice-city-collection-1280.jpg" alt="The Goodtime State – Vice City Collection artwork featuring Macca the Gator" /></p>
+<p><strong>The game is not included</strong> — this is merch, not a collector's edition of GTA VI. It's widely reported at <strong>$399.99</strong> in the US; check the store for your region's price. Rockstar said pre-order details for <strong>Asia, Latin America and Australia</strong> would follow.</p>
+<h2>Where to buy</h2>
+<p>Only at <strong><a href="https://store.rockstargames.com">store.rockstargames.com</a></strong>. Availability and prices differ by country, and some items may not ship to every region.</p>
+<h2>Also out on November 19</h2>
+<p><strong>Grand Theft Auto VI: The Album</strong> — 34 original tracks with Atlantic Records, on vinyl and CD as well as streaming. <a href="/GTAIndex-Demo/guides/gta-6-radio-stations-and-soundtrack">Radio stations and soundtrack</a>.</p>
+<p><em>Related: <a href="/GTAIndex-Demo/guides/gta-6-faq">GTA 6 FAQ</a> · <a href="/GTAIndex-Demo/guides/gta-6-editions-price-compared">editions and price compared</a> · <a href="/GTAIndex-Demo/guides/gta-6-launch-guide-preload-unlock-time-download-size">launch-day guide</a>.</em></p>
+<p><em>Sources: <a href="https://www.rockstargames.com/newswire/article/759875393o5253/grand-theft-auto-vi-collection-now-at-the-rockstar-store">Rockstar Newswire — Grand Theft Auto VI Collection Now at the Rockstar Store</a> (Oct 8, 2026) · <a href="https://www.rockstargames.com/newswire/article/9k2a49ook82o57/pre-order-the-goodtime-state-vice-city-collection-now-while-supplies-l">Rockstar Newswire — Pre-Order The Goodtime State – Vice City Collection</a> (Sep 24, 2026).</em></p>
+</div>
+
+              <p class="source">Source:
+          <a href="https://www.rockstargames.com/newswire/article/759875393o5253/grand-theft-auto-vi-collection-now-at-the-rockstar-store" rel="nofollow noopener" target="_blank">Rockstar Newswire, 24 Sep and 8 Oct 2026. Product images © Rockstar Games.</a>        </p>
+            <p class="muted" style="font-size:13px">Last verified 12 Oct 2026.</p>    </div>
+
+          <div class="wrap rec-gallery reveal" style="margin-top:clamp(28px,4vw,44px)">
+        <span class="rec-eyebrow-h">Gallery</span>
+        <div class="gallery">
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/collection-flatlay-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/collection-flatlay-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/collection-flatlay-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="The Grand Theft Auto VI Collection laid out: tees, caps, tote, lighter, keychain, money clip and stickers"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/vi-logo-tee-blue-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/vi-logo-tee-blue-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/vi-logo-tee-blue-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="Blue Grand Theft Auto VI tee with the pink palm-tree VI logo"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/macca-the-gator-tee-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/macca-the-gator-tee-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/macca-the-gator-tee-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="Macca the Gator Vice City Leonida tee print"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/vi-flexfit-caps-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/vi-flexfit-caps-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/vi-flexfit-caps-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="Grand Theft Auto VI Flexfit caps in black, pink and blue"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/zippo-money-clip-keychain-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/zippo-money-clip-keychain-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/zippo-money-clip-keychain-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="Vice City Zippo lighter, money clip and VI keychain"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/goodtime-state-vice-city-collection-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/goodtime-state-vice-city-collection-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/goodtime-state-vice-city-collection-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="The Goodtime State – Vice City Collection artwork with Macca the Gator"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                  </div>
+      </div>
+      </section>
+</article>
+
+<style>
+  .read-progress{position:fixed;top:var(--header-h);left:0;height:3px;width:0;z-index:1200;
+    background:linear-gradient(90deg,var(--sunset-pink),var(--sun-gold));box-shadow:0 0 10px rgba(240,90,157,.5)}
+  .article-wrap{max-width:740px}
+  .article-body{font-size:clamp(1.02rem,1.15vw,1.14rem);line-height:1.75}
+  .article-body > p:first-of-type::first-letter{font-family:'Bebas Neue',Impact,sans-serif;
+    float:left;font-size:3.4em;line-height:.8;padding:6px 12px 0 0;color:var(--sun-gold)}
+  .article-body h2{font-size:clamp(1.4rem,2.4vw,1.9rem);margin:1.8em 0 .5em;letter-spacing:.005em}
+  .article-body h3{font-size:clamp(1.15rem,1.8vw,1.4rem);margin:1.5em 0 .4em}
+  .article-body blockquote{margin:1.4em 0;padding:2px 0 2px 20px;border-left:3px solid var(--sunset-pink);
+    font-size:1.08em;font-style:italic;color:var(--paper)}
+  .article-body img{border-radius:12px;margin:1.4em 0}
+  .article-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.4em 0;
+    font-size:.92em;line-height:1.5;-webkit-overflow-scrolling:touch}
+  .article-body th,.article-body td{padding:10px 14px;text-align:left;vertical-align:top;
+    border-bottom:1px solid rgba(255,255,255,.12)}
+  .article-body th{font-weight:800;color:var(--sun-gold);white-space:nowrap;border-bottom-color:rgba(255,255,255,.28)}
+  .article-body tbody tr:nth-child(odd){background:rgba(255,255,255,.035)}
+</style>
+
+
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script>
+    (function () {
+      var bar = document.getElementById('readProgress'), art = document.getElementById('article');
+      if (!bar || !art) return;
+      function upd() {
+        var r = art.getBoundingClientRect(), vh = window.innerHeight;
+        var scrolled = Math.min(Math.max(-r.top, 0), Math.max(r.height - vh, 1));
+        bar.style.width = (scrolled / Math.max(r.height - vh, 1) * 100).toFixed(1) + '%';
+      }
+      upd();
+      window.addEventListener('scroll', upd, { passive: true });
+      window.addEventListener('resize', upd, { passive: true });
+    })();
+  </script>
+</body>
+</html>

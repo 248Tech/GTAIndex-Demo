@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crew — GTAIndex · Fan Project demo</title>
+<meta name="description" content="See your friends’ Leonida progress and share yours.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="page-crew">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew" aria-current="page">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+<div class="wrap" style="padding-top:18px"><div class="gi-demo-note"><strong>Demo note:</strong> live Crew sharing works in the GTAIndex desktop app, where friends on the same network show up automatically. In this web demo your progress is saved in this browser only.</div></div>
+<section class="gi-page">
+  <div class="wrap">
+    <span class="eyebrow">Crew</span>
+    <h1 class="display">Your crew</h1>
+    <p class="gi-lead">Anyone running GTAIndex on the same network shows up here automatically. You can see their collectibles and tracked records, and they can see yours.</p>
+
+    <div class="gi-grid2" style="margin-top:26px">
+      <div>
+        <div class="gi-panel">
+          <h2 style="font-size:20px;margin:0 0 14px">You</h2>
+          <label class="gi-field">Player name<input id="meName" maxlength="32" placeholder="e.g. Vice City Vinny"></label>
+          <div class="gi-field">Colour
+            <div class="gi-row" id="meColors"></div>
+          </div>
+          <label class="gi-row" style="gap:8px;font-size:14px;margin:4px 0 14px;cursor:pointer">
+            <input type="checkbox" id="meShare"> Share my progress with my crew
+          </label>
+          <button type="button" class="gi-btn gi-btn--hot" id="meSave">Save</button>
+        </div>
+
+        <div class="gi-panel">
+          <h2 style="font-size:20px;margin:0 0 6px">Add a friend</h2>
+          <p class="gi-muted" style="margin:0 0 12px">Friends on your Wi-Fi appear on their own. For anyone else, like over Tailscale or ZeroTier, enter their address.</p>
+          <div class="gi-row">
+            <input class="gi-input" id="addAddr" placeholder="192.168.1.20 or 100.64.0.5:7477" style="flex:1;min-width:180px">
+            <button type="button" class="gi-btn" id="addBtn">Add</button>
+          </div>
+          <p class="gi-muted" style="margin:14px 0 6px">Your address for friends:</p>
+          <div id="meAddrs" class="gi-row"></div>
+        </div>
+
+        <div class="gi-panel">
+          <h2 style="font-size:20px;margin:0 0 6px">Share by file</h2>
+          <p class="gi-muted" style="margin:0 0 12px">Not on the same network? Export your progress and send the file. Your friend imports it to see it here.</p>
+          <div class="gi-row">
+            <a class="gi-btn" href="/GTAIndex-Demo/api/export" download>Export my progress</a>
+            <label class="gi-btn" style="cursor:pointer">Import a friend's file<input type="file" id="importFile" accept=".json,application/json" hidden></label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="gi-panel">
+          <div class="gi-row" style="justify-content:space-between;margin-bottom:14px">
+            <h2 style="font-size:20px;margin:0">Leaderboard</h2>
+            <span class="gi-muted" id="crewStatus">Looking for crew…</span>
+          </div>
+          <div class="crew-list" id="crewList"></div>
+        </div>
+
+        <div class="gi-panel" id="cmpPanel" hidden>
+          <div class="gi-row" style="justify-content:space-between">
+            <h2 style="font-size:20px;margin:0" id="cmpTitle">Compare</h2>
+            <button type="button" class="gi-btn gi-btn--sm" id="cmpClose">Close</button>
+          </div>
+          <div class="cmp-tabs" id="cmpTabs" style="margin-top:12px"></div>
+          <div id="cmpBody" style="overflow-x:auto"></div>
+        </div>
+      </div>
+    </div>
+
+    <details class="gi-panel" style="margin-top:18px">
+      <summary style="cursor:pointer;font-weight:800">Friends not showing up?</summary>
+      <ul class="gi-muted" style="font-size:14px;line-height:1.7">
+        <li>Everyone needs GTAIndex open. The app is only "online" while it's running.</li>
+        <li>The first time it runs, Windows asks about network access. Choose <b>Allow</b> for <b>Private networks</b>. If you clicked Cancel, allow <code>GTAIndex.exe</code> in Windows Defender Firewall.</li>
+        <li>Your Wi-Fi must be set as a <b>Private</b> network. Public networks block discovery.</li>
+        <li>Guest Wi-Fi and some routers isolate devices from each other. Add friends by address instead, or use Tailscale.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script src="/GTAIndex-Demo/assets/js/crew.js"></script>
+</body>
+</html>

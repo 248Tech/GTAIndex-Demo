@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA VI safehouses and character customisation — GTAIndex · Fan Project demo</title>
+<meta name="description" content="Safehouses are discussed as more interactive personal spaces; their systems and character-stat effects are not fully confirmed.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides" aria-current="page">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<article class="rec" id="article">
+
+  
+  <section class="rec-hero ">
+          <div class="rec-hero__bg"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m19ytth6x8m504wp36784znd/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m19ytth6x8m504wp36784znd/img-1280.webp 1280w" sizes="100vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m19ytth6x8m504wp36784znd/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m19ytth6x8m504wp36784znd/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m19ytth6x8m504wp36784znd/img-1280.jpg 1280w"
+       sizes="100vw" alt="GTA VI safehouses and character customisation"
+               loading="eager" decoding="async" class="">
+</picture>
+</div>
+      <div class="rec-hero__scrim"></div>
+        <div class="rec-hero__inner">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/GTAIndex-Demo/guides">Guides</a> <span>/</span> <span aria-current="page">GTA VI safehouses and character customisation</span></nav>
+      <div class="rec-eyebrow">
+        <span class="chip">Article</span>
+        <span class="chip">30 Aug 2026</span>      </div>
+      <h1 class="display rec-title">GTA VI safehouses and character customisation</h1>
+      <p class="rec-sub">Safehouses are discussed as more interactive personal spaces; their systems and character-stat effects are not fully confirmed.</p>    </div>
+  </section>
+
+  
+  <section class="section" style="padding-top:clamp(28px,4vw,48px)">
+    <div class="wrap article-wrap">
+      <div class="prose article-body reveal"><h1>GTA 6 Character Customization: Safehouses, Body Changes, Outfits and More</h1>
+<p><strong>GTA 6 character customization</strong> goes considerably deeper than simply choosing clothes. Rockstar's <em>Grand Theft Auto VI: An Extended Look</em>, alongside official material and preview coverage, shows a system with similarities to <em>Red Dead Redemption 2</em>: Jason and Lucia can change their looks, develop different physiques, use functional safehouses and alter parts of their appearance while moving through the world.</p>
+<p>Several ideas also recall <em>Grand Theft Auto: San Andreas</em>, particularly the return of body changes linked to eating and exercise.</p>
+<h2>GTA 6 Safehouses Are Functional Home Bases</h2>
+<p>Safehouses in GTA VI are more than locations where the game simply saves progress. Preview information describes them as functional home bases closer in spirit to the camps in <strong>Red Dead Redemption 2</strong> than the relatively static properties seen in some earlier GTA games.</p>
+<p>Jason and Lucia can use these spaces for everyday activities and character management, including changing their appearance and clothing.</p>
+<p>Your <strong>wardrobe</strong> is tied to these home spaces, while vehicles also play an important role in managing equipment. Working vehicle trunks provide storage for items such as weapons and changes of clothing, giving players another reason to keep a personal vehicle nearby.</p>
+<p>This division creates a more physical inventory system:</p>
+<ul>
+<li>Safehouses function as places to rest and manage clothing and appearance.</li>
+<li>Wardrobe options can be accessed from home.</li>
+<li>Personal vehicles provide additional storage.</li>
+<li>Vehicle trunks can hold weapons and other useful equipment.</li>
+</ul>
+<p>The approach closely resembles <em>Red Dead Redemption 2</em>, where Arthur Morgan's camp and horse were important parts of managing his equipment and appearance.</p>
+<h2>Jason and Lucia's <img src="/GTAIndex-Demo/media/inline/Lucia_Caminos_04-1280.jpg" alt="Hit the gym — your build changes how you look and play." /></h2>
+<p><em>Hit the gym — your build changes how you look and play.</em></p>
+<p>Bodies Change Based on How You Play</p>
+<p>One of the most notable elements of <strong>GTA 6 customization</strong> is that Jason and Lucia do not necessarily maintain the same physique throughout the game.</p>
+<p>Their bodies can respond visibly to their lifestyle.</p>
+<h3>Going to the Gym Builds Muscle</h3>
+<p>Working out is not merely a background animation. The gym and exercise system can influence a character's physique, allowing players to <strong>build and tone muscle</strong> through physical activity.</p>
+<p>It is a concept GTA players will recognize from <em>San Andreas</em>, where CJ's muscle, fat and stamina could change according to exercise and eating habits.</p>
+<h3>Eating Can Affect Body Weight</h3>
+<p>Food also has a visible impact. Eating excessively can cause a character to <strong>gain weight</strong>, meaning Jason and Lucia's appearance can develop differently depending on how they are played.</p>
+<p>The Extended Look and subsequent coverage confirm that food and exercise contribute to physical changes rather than existing only as cosmetic animations.</p>
+<h3>Lack of Sleep Can Affect Appearance</h3>
+<p>Physical condition is not limited to muscle and body weight. Long periods without proper sleep can leave visible signs on the protagonists.</p>
+<p>Extended periods of stressful activity, including spending prolonged stretches evading police, can also make a character look noticeably worn down.</p>
+<p>This gives GTA VI a body-simulation system reminiscent of <em>Red Dead Redemption 2</em>, while bringing back ideas last associated strongly with <em>San Andreas</em>.</p>
+<p>For a wider breakdown of officially revealed systems, see <a href="/GTAIndex-Demo/guides/what-rockstar-confirmed-about-gta-vi">what Rockstar confirmed about GTA VI</a>.</p>
+<h2>Hairstyles, Clothing and Personal Style</h2>
+<p>Body shape is only one part of the customization system. GTA VI also provides more conventional ways to alter Jason and Lucia's appearances.</p>
+<p><strong>Hair salons</strong> allow players to change hairstyles. Rockstar has officially revealed Sara's Unisex Salon as one customization location, with signature styles for both protagonists. Its Ultimate Edition content includes facial-hair options for Jason as well as makeup and nail customization for Lucia.</p>
+<p>Clothing stores and other cosmetic locations further expand the number of possible looks.</p>
+<p>Rockstar's official Ultimate Edition information also confirms dedicated customization content such as:</p>
+<ul>
+<li>Hairstyles and other salon options.</li>
+<li>Clothing and accessories for Jason and Lucia.</li>
+<li>Facial-hair customization for Jason.</li>
+<li>Makeup and nail options for Lucia.</li>
+<li>Tattoos for both protagonists.</li>
+</ul>
+<p>Some specifically advertised stores and cosmetic items are tied to the <strong>Ultimate Edition</strong>, so they should not be taken to mean every listed customization option is available in every edition.</p>
+<h2>GTA 6 Lets You Change Parts of Your Outfit on the Fly</h2>
+<p>Not every appearance change requires a trip back to a safehouse or store.</p>
+<p>GTA VI includes an <strong>outfit and accessory radial wheel</strong> that allows certain items to be changed during gameplay. Footage and preview coverage show options such as:</p>
+<ul>
+<li>Hats.</li>
+<li>Sunglasses.</li>
+<li><a href="/GTAIndex-Demo/discover/gta-6-outfit-wheel">Face coverings</a>.</li>
+</ul>
+<p>That mechanic has practical consequences beyond fashion.</p>
+<p>GTA VI's police systems can take descriptions of suspects into account, including aspects of their appearance. Changing recognizable clothing or accessories can therefore help when attempting to escape a police description.</p>
+<p>Instead of customization existing entirely as a visual feature, Rockstar is tying appearance directly into its crime and wanted systems.</p>
+<h2>Customization Can Help You Evade Police</h2>
+<p>The ability to adjust clothing during a pursuit appears particularly useful because GTA VI's police can track more information about a suspect than simply their current position.</p>
+<p>If the authorities have a description of what Jason or Lucia is wearing, swapping or removing identifiable accessories can make it harder to match that description.</p>
+<p>A hat, sunglasses or a <strong>face covering</strong> therefore has potential tactical value as well as cosmetic value.</p>
+<p>Vehicle storage complements the same system. Keeping alternative clothing and equipment in a car gives players more options when attempting to disappear after committing a crime.</p>
+<h2>Jason and Lucia Have Separate Looks to Develop</h2>
+<p>GTA VI revolves around two playable protagonists: <strong><a href="/GTAIndex-Demo/characters/jason-duval">Jason Duval</a></strong> and <strong><a href="/GTAIndex-Demo/characters/lucia-caminos">Lucia Caminos</a></strong>.</p>
+<p>Because players control both characters, customization is not limited to creating a single appearance for the entire game.</p>
+<p>Jason and Lucia each have their own:</p>
+<ul>
+<li>Appearance.</li>
+<li>Clothing and wardrobe choices.</li>
+<li>Hairstyles and cosmetic options.</li>
+<li>Physique that can change over time.</li>
+</ul>
+<p>That means players can build two distinct visual identities throughout the story rather than treating Jason and Lucia as interchangeable versions of the same customization system.</p>
+<p>One character could potentially become more muscular through regular workouts while the other develops differently depending on eating, exercise, rest and other lifestyle choices.</p>
+<h2>How GTA 6 Customization Compares With San Andreas and RDR2</h2>
+<p>GTA VI appears to combine ideas from two of Rockstar's most detailed previous games.</p>
+<p>From <strong>GTA: San Andreas</strong>, it brings back the idea that the protagonist's physical appearance responds to activities such as eating and exercise.</p>
+<p>From <strong>Red Dead Redemption 2</strong>, it takes inspiration from the idea of an evolving character whose condition, clothing and day-to-day lifestyle are integrated into the wider game world.</p>
+<p>The result is a customization system that appears to operate on several levels at once:</p>
+<ul>
+<li><strong>Cosmetic customization:</strong> clothing, hairstyles, facial hair, makeup, nails and tattoos.</li>
+<li><strong>Physical development:</strong> gaining muscle and changing body weight.</li>
+<li><strong>Lifestyle effects:</strong> visible signs associated with sleep and prolonged stressful activity.</li>
+<li><strong>Functional customization:</strong> changing accessories to influence how easily police recognize you.</li>
+<li><strong>Equipment management:</strong> using safehouses and vehicle storage to manage clothing and gear.</li>
+</ul>
+<p>That combination makes appearance part of the underlying gameplay rather than a purely cosmetic menu.</p>
+<h2>What Is Confirmed About GTA 6 Character Customization?</h2>
+<p>Based on Rockstar's August 27, 2026 Extended Look, its official edition information and credible preview reporting, the major customization features shown or described include:</p>
+<ul>
+<li>Jason and Lucia can change clothing and appearance.</li>
+<li>Safehouses operate as functional home bases and wardrobe locations.</li>
+<li>Vehicles can provide storage for equipment, including weapons and clothing.</li>
+<li>Exercise can visibly build muscle.</li>
+<li>Eating habits can affect body weight.</li>
+<li>Insufficient sleep and prolonged stressful activity can affect how characters look.</li>
+<li>Hair and other cosmetic customization is available through salon systems.</li>
+<li>Certain accessories can be changed quickly through a radial wheel.</li>
+<li>Hats, sunglasses and face coverings can help alter a police description.</li>
+<li>Jason and Lucia each have their own appearance and physique to develop.</li>
+</ul>
+<p>Rockstar may reveal additional customization mechanics before GTA VI launches, so this guide should be updated as new official information becomes available.</p>
+<h2>Conclusion</h2>
+<p><strong>GTA 6 character customization</strong> is shaping up to be one of the series' deepest appearance systems. Rather than limiting players to wardrobes and haircuts, Rockstar is combining clothing, body development, lifestyle effects, functional safehouses, vehicle storage and disguise mechanics.</p>
+<p>The return of muscle and weight changes recalls <em>San Andreas</em>, while the emphasis on persistent physical condition and functional home spaces has clear similarities to <em>Red Dead Redemption 2</em>. With both <strong>Jason and Lucia</strong> having their own looks and physiques, players will be able to develop two distinct characters over the course of GTA VI.</p>
+<p>As Rockstar reveals more about safehouses, wardrobes, salons, body simulation and disguise systems, these details can be expanded further.</p>
+<p>Sources:</p>
+<ul>
+<li><a href="https://www.rockstargames.com/VI">Grand Theft Auto VI — Official Rockstar Games Website</a></li>
+<li><a href="https://www.rockstargames.com/videos/rk721912">Grand Theft Auto VI: An Extended Look — Rockstar Games</a></li>
+<li><a href="https://www.rockstargames.com/VI/editions">Grand Theft Auto VI Editions — Rockstar Games</a></li>
+<li><a href="https://www.rockstargames.com/newswire/article/9k2kaa1o3297k9/grand-theft-auto-vi-an-extended-look">Grand Theft Auto VI Extended Look Announcement — Rockstar Newswire</a></li>
+<li><a href="https://www.wired.com/story/5-takeaways-from-the-gta-vi-extended-look/">WIRED — GTA VI Extended Look Takeaways</a></li>
+</ul>
+<h2>Verified safehouse and appearance additions</h2>
+<p>Safehouses are highly interactive personal spaces. At home, players can use the bathroom to cut hair or shave a beard; a hair stylist is required for a full hairstyle change, and different salons offer different styles. An Items tab manages masks, headwear and outfits near vehicles.</p>
+<p>Appearance reflects player behaviour: eating affects weight, exercise changes muscle, and long periods without sleep or extended police escapes can leave visible effects. These systems are optional, and Rockstar does not require players to engage with the role-playing layer to finish the story.</p>
+<h2>Body condition range</h2>
+<p>Creator-preview reporting confirms that Jason and Lucia have physical body-condition ranges, from unfit through muscular. Further specifics remain under NDA, so GTAIndex does not yet assign stat thresholds, cosmetic stages or permanent effects to that system.</p>
+
+<h2>October 2026: inside the demo safehouse</h2>
+<p>In IGN's full interview, Rob Nelson notes the safehouse shown in the demo isn't Jason and Lucia's own — they're staying in someone else's home. Each protagonist keeps their own schedule, so switching may find your partner at home or out doing their own thing. Home grooming is reductive only (cut shorter or shave); new styles mean a salon or barber, and each salon has signature styles of its own. <a href="/GTAIndex-Demo/guides/gta-6-ign-full-interview-rob-nelson">Full interview breakdown</a>.</p>
+
+</div>
+
+              <p class="source">Source:
+          <a href="https://www.pcgamer.com/news/live/grand-theft-auto-6-reveal-live-coverage-breaking-down-the-netflix-extended-look-event/" rel="nofollow noopener" target="_blank">Verified creator-preview update, 2 Sep 2026 — MikeShowSha information supplied to GTAIndex.</a>        </p>
+            <p class="muted" style="font-size:13px">Last verified 10 Oct 2026.</p>    </div>
+
+      </section>
+</article>
+
+<style>
+  .read-progress{position:fixed;top:var(--header-h);left:0;height:3px;width:0;z-index:1200;
+    background:linear-gradient(90deg,var(--sunset-pink),var(--sun-gold));box-shadow:0 0 10px rgba(240,90,157,.5)}
+  .article-wrap{max-width:740px}
+  .article-body{font-size:clamp(1.02rem,1.15vw,1.14rem);line-height:1.75}
+  .article-body > p:first-of-type::first-letter{font-family:'Bebas Neue',Impact,sans-serif;
+    float:left;font-size:3.4em;line-height:.8;padding:6px 12px 0 0;color:var(--sun-gold)}
+  .article-body h2{font-size:clamp(1.4rem,2.4vw,1.9rem);margin:1.8em 0 .5em;letter-spacing:.005em}
+  .article-body h3{font-size:clamp(1.15rem,1.8vw,1.4rem);margin:1.5em 0 .4em}
+  .article-body blockquote{margin:1.4em 0;padding:2px 0 2px 20px;border-left:3px solid var(--sunset-pink);
+    font-size:1.08em;font-style:italic;color:var(--paper)}
+  .article-body img{border-radius:12px;margin:1.4em 0}
+  .article-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.4em 0;
+    font-size:.92em;line-height:1.5;-webkit-overflow-scrolling:touch}
+  .article-body th,.article-body td{padding:10px 14px;text-align:left;vertical-align:top;
+    border-bottom:1px solid rgba(255,255,255,.12)}
+  .article-body th{font-weight:800;color:var(--sun-gold);white-space:nowrap;border-bottom-color:rgba(255,255,255,.28)}
+  .article-body tbody tr:nth-child(odd){background:rgba(255,255,255,.035)}
+</style>
+
+
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script>
+    (function () {
+      var bar = document.getElementById('readProgress'), art = document.getElementById('article');
+      if (!bar || !art) return;
+      function upd() {
+        var r = art.getBoundingClientRect(), vh = window.innerHeight;
+        var scrolled = Math.min(Math.max(-r.top, 0), Math.max(r.height - vh, 1));
+        bar.style.width = (scrolled / Math.max(r.height - vh, 1) * 100).toFixed(1) + '%';
+      }
+      upd();
+      window.addEventListener('scroll', upd, { passive: true });
+      window.addEventListener('resize', upd, { passive: true });
+    })();
+  </script>
+</body>
+</html>

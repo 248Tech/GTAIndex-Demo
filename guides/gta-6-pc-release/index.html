@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 PC Release: Is Grand Theft Auto VI Coming to PC? — GTAIndex · Fan Project demo</title>
+<meta name="description" content="GTA 6 PC has not been announced. Here is what Rockstar confirms for PS5 and Xbox Series X|S, plus what GTA 5 and RDR2 history suggests.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides" aria-current="page">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<article class="rec" id="article">
+
+  
+  <section class="rec-hero ">
+          <div class="rec-hero__bg"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/guides/is-gta-6-coming-to-pc/hero-diverse-640.webp 640w, /GTAIndex-Demo/media/guides/is-gta-6-coming-to-pc/hero-diverse-1280.webp 1280w" sizes="100vw">
+    <img src="/GTAIndex-Demo/media/guides/is-gta-6-coming-to-pc/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/is-gta-6-coming-to-pc/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/is-gta-6-coming-to-pc/hero-diverse-1280.jpg 1280w"
+       sizes="100vw" alt="Lucia in a neon-lit car"
+               loading="eager" decoding="async" class="">
+</picture>
+</div>
+      <div class="rec-hero__scrim"></div>
+        <div class="rec-hero__inner">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/GTAIndex-Demo/guides">Guides</a> <span>/</span> <span aria-current="page">GTA 6 PC Release: Is Grand Theft Auto VI Coming to PC?</span></nav>
+      <div class="rec-eyebrow">
+        <span class="chip">Article</span>
+        <span class="chip">30 Aug 2026</span>      </div>
+      <h1 class="display rec-title">GTA 6 PC Release: Is Grand Theft Auto VI Coming to PC?</h1>
+      <p class="rec-sub">GTA 6 PC has not been announced. Here is what Rockstar confirms for PS5 and Xbox Series X|S, plus what GTA 5 and RDR2 history suggests.</p>    </div>
+  </section>
+
+  
+  <section class="section" style="padding-top:clamp(28px,4vw,48px)">
+    <div class="wrap article-wrap">
+      <div class="prose article-body reveal"><p><strong>Rockstar has not announced a GTA 6 PC version.</strong> As of October 2026, <em>Grand Theft Auto VI</em> is officially confirmed for <strong>PlayStation 5</strong> and <strong>Xbox Series X|S</strong>, with a launch date of <strong>November 19, 2026</strong>.</p>
+<p>There is currently no confirmed PC release date, PC launch window, PC pre-order or official announcement that a Windows version is in development. Rockstar's history makes a later PC release plausible, but that remains an expectation rather than a confirmed plan.</p>
+<h2>GTA 6 Is Officially Confirmed for PS5 and Xbox Series X|S</h2>
+<p>Rockstar currently lists only two console families for GTA VI:</p>
+<ul>
+<li><strong>PlayStation 5</strong></li>
+<li><strong>Xbox Series X|S</strong></li>
+</ul>
+<p>The game is scheduled to launch on both platforms on <strong>November 19, 2026</strong>.</p>
+<p>Rockstar's official support documentation, updated on August 18, 2026, states that GTA VI can be pre-ordered for PS5 and Xbox Series X|S. Its official store likewise lists the November 19 release date without offering a PC platform option.</p>
+<p>For a broader breakdown of the launch, see our <a href="/GTAIndex-Demo/guides/gta-6-release-date-platforms-everything-we-know">GTA 6 release date and platforms guide</a>.</p>
+<p><img src="/GTAIndex-Demo/media/inline/Jason_Duval_04-1280.jpg" alt="Vice City nightlife — PS5 and Xbox Series only, for now." /></p>
+<p><em>Vice City nightlife — PS5 and Xbox Series only, for now.</em></p>
+<h2>There Is No GTA 6 PC Release Date</h2>
+<p>At present, Rockstar has announced <strong>no GTA 6 PC release date</strong>.</p>
+<p>That also means there is currently:</p>
+<ul>
+<li>No official GTA 6 PC release window.</li>
+<li>No GTA 6 PC pre-order.</li>
+<li>No confirmed PC system requirements.</li>
+<li>No announced Steam or Epic Games Store version.</li>
+<li>No official Rockstar Games Launcher pre-order for GTA VI on PC.</li>
+</ul>
+<p>Any website, retailer listing, social-media post or video claiming to know an exact GTA 6 PC launch date is therefore going beyond what Rockstar has publicly confirmed.</p>
+<p>Until Rockstar makes an announcement, specific PC dates should be treated as <strong>rumor or speculation</strong>.</p>
+<h2>The GTA 6 Extended Look Was Captured on PlayStation 5</h2>
+<p>Rockstar's August 27, 2026 <strong>Grand Theft Auto VI: An Extended Look</strong> presentation does not provide evidence of a PC build.</p>
+<p>Rockstar explicitly states that the entire presentation was <strong>captured from in-game footage on PlayStation 5</strong>.</p>
+<p>That is worth emphasizing because high-quality GTA VI footage can easily lead to speculation that Rockstar is demonstrating the game on a powerful PC.</p>
+<p>In this case, Rockstar has directly identified the platform used for the Extended Look as PS5.</p>
+<p>It does not prove that a PC version does or does not exist internally. It simply means the public presentation was captured on PlayStation 5 and offers no official PC announcement.</p>
+<h2>Will GTA 6 Eventually Come to PC?</h2>
+<p>A GTA 6 PC version is certainly plausible based on Rockstar's previous major releases, but <strong>Rockstar has not promised one</strong>.</p>
+<p>The strongest argument for an eventual PC port comes from the company's history.</p>
+<p>Two of Rockstar's biggest recent releases arrived on consoles first before eventually coming to PC:</p>
+<ul>
+<li><strong>Grand Theft Auto V</strong> launched on PlayStation 3 and Xbox 360 in September 2013. Its PC version arrived on <strong>April 14, 2015</strong>.</li>
+<li><strong>Red Dead Redemption 2</strong> launched on PlayStation 4 and Xbox One in October 2018. Its PC version followed on <strong>November 5, 2019</strong>.</li>
+</ul>
+<p>Both cases demonstrate Rockstar's willingness to release major games on PC after an initial console launch.</p>
+<p>They do not establish a guaranteed timetable for GTA VI.</p>
+<h2>How Long Did GTA 5 Take to Come to PC?</h2>
+<p><em>Grand Theft Auto V</em> originally launched for PlayStation 3 and Xbox 360 on <strong>September 17, 2013</strong>.</p>
+<p>Rockstar released the PC version on <strong>April 14, 2015</strong>.</p>
+<p>That is approximately <strong>19 months after the original console release</strong>, often rounded to around a year and a half.</p>
+<p>The gap was also complicated by the arrival of the PlayStation 4 and Xbox One editions in November 2014, which preceded the PC release by several months.</p>
+<p>For GTA VI, there is no evidence that Rockstar intends to repeat the same schedule.</p>
+<h2>How Long Did Red Dead Redemption 2 Take to Come to PC?</h2>
+<p><em>Red Dead Redemption 2</em> launched on PlayStation 4 and Xbox One on <strong>October 26, 2018</strong>.</p>
+<p>Rockstar subsequently announced a PC edition, which arrived on <strong>November 5, 2019</strong>.</p>
+<p>The gap was a little over <strong>12 months</strong>.</p>
+<p>Its PC version included technical and graphical improvements, additional settings and platform-specific enhancements, demonstrating that Rockstar has previously used delayed PC launches to offer more extensive configuration options.</p>
+<p>Again, that history is useful context rather than a roadmap for GTA VI.</p>
+<h2>Could GTA 6 PC Arrive a Year After Consoles?</h2>
+<p>It is possible, but there is currently no reliable basis for assigning a specific date.</p>
+<p>Using Rockstar's two most relevant examples:</p>
+<table>
+<thead>
+<tr>
+<th>Game</th>
+<th>Console Launch</th>
+<th>PC Launch</th>
+<th>Approximate Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GTA V</td>
+<td>September 17, 2013</td>
+<td>April 14, 2015</td>
+<td>19 months</td>
+</tr>
+<tr>
+<td>Red Dead Redemption 2</td>
+<td>October 26, 2018</td>
+<td>November 5, 2019</td>
+<td>12 months</td>
+</tr>
+<tr>
+<td>GTA VI</td>
+<td>November 19, 2026</td>
+<td><strong>Not announced</strong></td>
+<td>Unknown</td>
+</tr>
+</tbody>
+</table>
+<p>If GTA VI followed a similar pattern, a PC version could theoretically arrive sometime after the console release.</p>
+<p>However, using those previous gaps to predict a specific <strong>2027 or 2028 GTA 6 PC release date</strong> would still be speculation.</p>
+<p>Development requirements, commercial strategy and Rockstar's launch plans can differ substantially between games.</p>
+<h2>Why Does Rockstar Release PC Versions Later?</h2>
+<p>Rockstar has not published a GTA VI-specific explanation for the lack of a PC announcement, so claims about the reason should be treated cautiously.</p>
+<p>Historically, delayed PC releases can give developers additional time to account for the much wider variety of PC hardware configurations and to develop platform-specific technical features.</p>
+<p>For example, Rockstar's GTA V PC release included:</p>
+<ul>
+<li>Extensive graphics settings.</li>
+<li>Higher-resolution support.</li>
+<li>60fps support.</li>
+<li>Mouse and keyboard customization.</li>
+<li>Multi-monitor support.</li>
+<li>Adjustable population-density settings.</li>
+</ul>
+<p>The PC edition of <em>Red Dead Redemption 2</em> likewise arrived with graphical and technical enhancements.</p>
+<p>That history may help explain why fans expect GTA VI to receive a dedicated PC edition eventually, but Rockstar has not said that this is its current strategy for GTA VI.</p>
+<h2>Can You Pre-Order GTA 6 on PC?</h2>
+<p>No official GTA VI PC pre-order currently exists.</p>
+<p>Rockstar's current pre-order options are for:</p>
+<ul>
+<li>PlayStation 5.</li>
+<li>Xbox Series X|S.</li>
+</ul>
+<p>If a website offers what it describes as a guaranteed GTA 6 PC pre-order, buyers should verify whether it is actually authorized by Rockstar before paying.</p>
+<p>The safest indication that PC pre-orders are legitimate will be a PC listing directly from Rockstar or an officially announced digital storefront.</p>
+<h2>What Platforms Will GTA 6 Be On at Launch?</h2>
+<p>Based on Rockstar's current announcement, GTA VI launches on:</p>
+<ul>
+<li><strong>PS5</strong></li>
+<li><strong>Xbox Series X|S</strong></li>
+</ul>
+<p>There is no announced launch-day PC edition.</p>
+<p>There is also no announced version for PlayStation 4 or Xbox One.</p>
+<p>Rockstar's official GTA VI platform support page specifically directs customers to PS5 and Xbox Series X|S pre-orders.</p>
+<h2>Should PC Players Wait for GTA 6?</h2>
+<p>That depends on whether playing at launch matters more than waiting for a potential PC edition.</p>
+<p>Anyone who wants to play GTA VI on its confirmed <strong>November 19, 2026</strong> release date will currently need access to a PS5 or Xbox Series X|S.</p>
+<p>PC-only players have two practical options:</p>
+<ul>
+<li>Wait for Rockstar to announce a PC edition.</li>
+<li>Play the console version at launch and consider a later PC edition if one is eventually released.</li>
+</ul>
+<p>Buying a console solely because you expect a delayed PC release to take a particular number of months would be risky because Rockstar has not provided a PC timetable.</p>
+<h2>Is GTA 6 Coming to Steam?</h2>
+<p>Rockstar has not announced a GTA VI Steam release.</p>
+<p>There is currently no confirmed GTA VI PC version at all, so its potential PC storefronts are also unknown.</p>
+<p>Previous Rockstar PC games such as GTA V and Red Dead Redemption 2 are available through PC storefronts including Steam, but that precedent does not confirm how GTA VI would be distributed.</p>
+<p>Any Steam release date currently circulating should therefore be considered unconfirmed.</p>
+<h2>Is GTA 6 Coming to the Rockstar Games Launcher?</h2>
+<p>There is no confirmed GTA VI listing for PC through the Rockstar Games Launcher.</p>
+<p>Rockstar has used its own launcher for previous PC releases, including <em>Red Dead Redemption 2</em>, so it would be an obvious potential distribution platform if GTA VI eventually reaches PC.</p>
+<p>However, Rockstar has made no such announcement.</p>
+<h2>GTA 6 PC Release FAQ</h2>
+<h3>Has Rockstar confirmed GTA 6 for PC?</h3>
+<p>No. Rockstar currently confirms GTA VI for <strong>PlayStation 5 and Xbox Series X|S only</strong>.</p>
+<h3>When is GTA 6 coming to PC?</h3>
+<p>There is no official GTA 6 PC release date or release window.</p>
+<h3>Will GTA 6 release on PC on November 19, 2026?</h3>
+<p>Not according to Rockstar's current platform announcements. November 19, 2026 is the confirmed launch date for PS5 and Xbox Series X|S.</p>
+<h3>Was the GTA 6 Extended Look running on PC?</h3>
+<p>No PC capture was announced. Rockstar says the Extended Look was captured entirely from in-game footage on <strong>PlayStation 5</strong>.</p>
+<h3>Did GTA 5 launch on PC at the same time as consoles?</h3>
+<p>No. GTA V first launched on consoles in September 2013 and reached PC on April 14, 2015, approximately 19 months later.</p>
+<h3>Did Red Dead Redemption 2 launch on PC at the same time as consoles?</h3>
+<p>No. Red Dead Redemption 2 launched on consoles in October 2018 and arrived on PC on November 5, 2019, a little over one year later.</p>
+<h3>Does Rockstar's history guarantee GTA 6 will come to PC?</h3>
+<p>No. Previous PC releases make a later GTA VI PC version plausible, but Rockstar has not officially announced one.</p>
+<h2>Conclusion</h2>
+<p>The current answer to the <strong>GTA 6 PC</strong> question is straightforward: <strong>Rockstar has not announced a PC version of Grand Theft Auto VI</strong>.</p>
+<p>GTA VI is officially scheduled to launch on <strong>November 19, 2026 for PlayStation 5 and Xbox Series X|S</strong>, and Rockstar's Extended Look was captured entirely from in-game footage on PS5. There is no PC release date, launch window or official PC pre-order.</p>
+<p>GTA V and Red Dead Redemption 2 both reached PC after their original console releases, so history provides a reasonable basis for expecting that GTA VI could eventually do the same. It does not provide a reliable date.</p>
+<p>For anyone determined to play on launch day, <strong>PS5 or Xbox Series X|S are currently the only confirmed options</strong>. This page should be updated as soon as Rockstar announces anything official about a GTA VI PC version.</p>
+<p>Sources:</p>
+<ul>
+<li><a href="https://www.rockstargames.com/VI">Rockstar Games — Grand Theft Auto VI</a></li>
+<li><a href="https://support.rockstargames.com/articles/4QfG4FmZCf5W1gS8jy4UVT/grand-theft-auto-vi-platform-editions-and-versions">Rockstar Support — Grand Theft Auto VI Platforms, Editions, and Versions</a></li>
+<li><a href="https://www.rockstargames.com/VI/an-extended-look">Rockstar Games — Grand Theft Auto VI: An Extended Look</a></li>
+<li><a href="https://www.rockstargames.com/newswire/article/25o2411812a31k/grand-theft-auto-v-is-now-available-for-pc">Rockstar Games — Grand Theft Auto V Is Now Available for PC</a></li>
+<li><a href="https://www.rockstargames.com/intl/newswire/article/9k1248838o2974/Red-Dead-Redemption-2-Coming-to-PC-November-5th">Rockstar Games — Red Dead Redemption 2 Coming to PC November 5</a></li>
+</ul>
+</div>
+
+              <p class="source">Source:
+          <a href="https://www.rockstargames.com/VI" rel="nofollow noopener" target="_blank">Rockstar Games announcements; series release history.</a>        </p>
+            <p class="muted" style="font-size:13px">Last verified 12 Oct 2026.</p>    </div>
+
+      </section>
+</article>
+
+<style>
+  .read-progress{position:fixed;top:var(--header-h);left:0;height:3px;width:0;z-index:1200;
+    background:linear-gradient(90deg,var(--sunset-pink),var(--sun-gold));box-shadow:0 0 10px rgba(240,90,157,.5)}
+  .article-wrap{max-width:740px}
+  .article-body{font-size:clamp(1.02rem,1.15vw,1.14rem);line-height:1.75}
+  .article-body > p:first-of-type::first-letter{font-family:'Bebas Neue',Impact,sans-serif;
+    float:left;font-size:3.4em;line-height:.8;padding:6px 12px 0 0;color:var(--sun-gold)}
+  .article-body h2{font-size:clamp(1.4rem,2.4vw,1.9rem);margin:1.8em 0 .5em;letter-spacing:.005em}
+  .article-body h3{font-size:clamp(1.15rem,1.8vw,1.4rem);margin:1.5em 0 .4em}
+  .article-body blockquote{margin:1.4em 0;padding:2px 0 2px 20px;border-left:3px solid var(--sunset-pink);
+    font-size:1.08em;font-style:italic;color:var(--paper)}
+  .article-body img{border-radius:12px;margin:1.4em 0}
+  .article-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.4em 0;
+    font-size:.92em;line-height:1.5;-webkit-overflow-scrolling:touch}
+  .article-body th,.article-body td{padding:10px 14px;text-align:left;vertical-align:top;
+    border-bottom:1px solid rgba(255,255,255,.12)}
+  .article-body th{font-weight:800;color:var(--sun-gold);white-space:nowrap;border-bottom-color:rgba(255,255,255,.28)}
+  .article-body tbody tr:nth-child(odd){background:rgba(255,255,255,.035)}
+</style>
+
+
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script>
+    (function () {
+      var bar = document.getElementById('readProgress'), art = document.getElementById('article');
+      if (!bar || !art) return;
+      function upd() {
+        var r = art.getBoundingClientRect(), vh = window.innerHeight;
+        var scrolled = Math.min(Math.max(-r.top, 0), Math.max(r.height - vh, 1));
+        bar.style.width = (scrolled / Math.max(r.height - vh, 1) * 100).toFixed(1) + '%';
+      }
+      upd();
+      window.addEventListener('scroll', upd, { passive: true });
+      window.addEventListener('resize', upd, { passive: true });
+    })();
+  </script>
+</body>
+</html>

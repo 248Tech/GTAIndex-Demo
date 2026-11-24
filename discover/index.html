@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 News &amp; Discoveries — Every Confirmed Detail | GTAIndex · Fan Project demo</title>
+<meta name="description" content="Every confirmed Grand Theft Auto VI detail, sourced and dated — from the Extended Look to the reveal. Verified finds, open mysteries and debunked claims.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover" aria-current="page">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+    <section class="section" style="padding-top:40px">
+    <div class="wrap">
+      <div class="section-head"><div><span class="eyebrow">Discover</span><h2>Discoveries &amp; mysteries</h2><p>Verified finds, open mysteries, and debunked claims — every entry sourced and dated.</p></div></div>
+
+              <div class="articlelist">
+                                  <a href="/GTAIndex-Demo/discover/gta-6-organic-police-pursuits" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI police pursuits are systemic in free roam</h3>
+                <p>Tyre shots and chase physics seen in the Extended Look can reportedly happen during ordinary unscripted pursuits.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-focus-interiors" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Focus can highlight accessible doors in GTA VI</h3>
+                <p>Focus is also an exploration tool, helping players spot accessible doors and interiors.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-action-prompt-ui" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI refreshes its action-prompt interface</h3>
+                <p>The contextual action layout has been updated and includes a broad set of customisation options.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-movement-controls" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI movement is smoother, with L3 sprint</h3>
+                <p>Creator-preview reporting describes a smoother movement feel and confirms sprint on L3 for the PlayStation layout.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-body-condition-range" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Jason and Lucia have unfit-to-muscular body ranges</h3>
+                <p>The physical-customisation range is confirmed, while its detailed rules remain under NDA.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-localized-injury-detail" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI shows localized injury detail</h3>
+                <p>A taser fall during the preview left Jason with visible abrasions on his elbows.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-outfit-npc-reactions" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI NPCs can react to outfits</h3>
+                <p>Certain clothing choices can draw hostile reactions and may provoke a fight.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-vice-city-districts" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI offers map, compass and HUD customisation</h3>
+                <p>Players can disable the map, use a compass, and set waypoints against physical locations.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-phone-apps" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI’s phone supports social feeds, rides and vehicle tools</h3>
+                <p>The phone includes social-media, vehicle, fitness and transport functions.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-ps5-30fps" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Creator previews were shown at 4K, 30 FPS on base PS5</h3>
+                <p>TGG reports the preview build ran at 4K and 30 FPS on a base PlayStation 5.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-wildlife" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI wildlife includes Florida animals and a zoo</h3>
+                <p>The preview shows a broad animal range, and Rockstar’s Leonida includes a zoo and hunting.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-weather" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI has varied weather and longer days</h3>
+                <p>Rockstar confirms a broad weather range while detailed systems remain under wraps.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-social-media" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI social media can lead to live NPC events</h3>
+                <p>Players can read social posts, travel to an event location and encounter it in real time.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-optional-romance" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Jason and Lucia’s romance is optional and interactive</h3>
+                <p>Texts, dates and joint activities can affect the relationship, but romance remains optional.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-very-big-map" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI’s map is reported as 2× GTA V and 3× RDR2</h3>
+                <p>Creator previews report a much larger Leonida, with Vice City twice Los Santos in size.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-heist-greed-vs-speed" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI robberies balance speed, value and risk</h3>
+                <p>Open-world stores, jewellery shops and banks let players choose a quick exit or a riskier search for greater value.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-radio-tv-ads" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI includes podcasts, TV shows and creator-safe music</h3>
+                <p>The game’s On Demand feature carries podcasts and shows, while Rockstar worked with studios on in-game television and ads.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-random-events" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI random events are optional and multi-outcome</h3>
+                <p>Random encounters can happen naturally, offering choices with different outcomes.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-fuel-and-electric-vehicles" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI confirms fuel and EV charging</h3>
+                <p>Cars can be refuelled and electric vehicles charged; fuel affects free-roam getaway planning.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-weapon-loadout" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI uses a limited carried weapon loadout</h3>
+                <p>Two sidearms, two larger weapons and item slots are carried; extra weapons are stored in the trunk.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-vehicle-customisation" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI has specialist mod shops and deeper vehicle tuning</h3>
+                <p>Workshop type can affect available modifications, while vehicle systems include drivetrain, tyres, suspension and steering.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-safehouse-interactivity" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI safehouses are interactive personal spaces</h3>
+                <p>Safehouses support grooming, item management and optional role-playing systems.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-criminal-profile" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI Criminal Profile can permanently shatter</h3>
+                <p>Each protagonist has an individual Criminal Profile, with a severe irreversible state.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-morality-system" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI has a Criminal Profile system</h3>
+                <p>Criminal Profile tracks how professionally Jason and Lucia conduct crime; it is not a simple morality meter.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-outfit-wheel" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI has an Items tab for masks, outfits and headwear</h3>
+                <p>An Items tab manages clothing-related equipment, including outfits near a vehicle.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-interaction-prompts" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI lets players greet or taunt NPCs</h3>
+                <p>Holding L2/LT enables interactions such as greeting or taunting NPCs.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-activities" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI’s verified activities include gym, diving and racing</h3>
+                <p>The preview confirms a broad activity set, all optional to story completion.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-wanted-system-description" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI police track evidence and descriptions</h3>
+                <p>Police heat can track CCTV, identity, clothing and weapons rather than only a generic wanted level.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-six-star-wanted-level" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI’s six-star wanted level triggers a state-wide search</h3>
+                <p>At six stars, the reported police search expands across the state of Leonida.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-split-up-wanted" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Jason and Lucia can split up during a wanted situation</h3>
+                <p>When the protagonists are together, separating them can reduce wanted heat.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-car-theft-reworked" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI car theft uses vehicle-specific tools</h3>
+                <p>Slim Jims, phone tools and key cloning/hacking vary with a vehicle’s age and security.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-combat-system" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI Focus slows time and reveals weak points</h3>
+                <p>Focus supports gunplay and driving by slowing time and highlighting enemy or vehicle weaknesses.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-npc-interactions" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI NPCs have handcrafted looks and reactive behaviour</h3>
+                <p>Rockstar built new systems for diverse, handcrafted NPCs that respond to the player and world events.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-preload-november-12" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 pre-loading starts November 12 at local midnight</h3>
+                <p>Digital pre-orders can download a week before launch.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-npcs-notice-eavesdropping" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 NPCs notice when you eavesdrop</h3>
+                <p>Listen in too long — or follow someone too closely — and NPCs will call you out.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-seamless-interiors" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">GTA 6 interiors run in real time — no loading screens</h3>
+                <p>Buildings and safehouses exist in the live world — look out a window and see the real map, then physically walk outside.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/jason-and-lucia-protagonists" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Two playable protagonists: Jason and Lucia</h3>
+                <p>Rockstar identifies Jason Duval and Lucia Caminos as GTA VI’s protagonists.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-physical-no-disc" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 boxed copies contain a code, not a disc</h3>
+                <p>The physical version is a download code in a box.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-new-outfit-clears-heat" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">A new outfit clears your GTA 6 heat</h3>
+                <p>Hats, glasses and haircuts won’t fool the police — a new outfit will.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-vehicle-melee" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">GTA 6 adds car-door bashes and vehicle kicks</h3>
+                <p>A new melee button lets Jason fling a car door into someone — or throw a kick while riding an e-scooter.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/state-of-leonida" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">The setting: the state of Leonida</h3>
+                <p>GTA VI is set in the fictional state of Leonida, including Vice City.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-price-standard-ultimate" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 costs $79.99, or $99.99 for the Ultimate Edition</h3>
+                <p>Rockstar’s US prices for the two editions.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-escape-on-foot" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">At three stars in GTA 6, escape on foot</h3>
+                <p>In the city, alleys beat roads when the police are on you.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-pet-dogs" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">GTA 6 lets you pet dogs — and owners can say no</h3>
+                <p>Approach someone walking a dog and you can ask to pet it — the owner and the dog can both refuse.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-crypto-currency-claims" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--debunked">Debunked</span>
+                <h3 style="margin-top:8px">No confirmed GTA VI cryptocurrency payouts</h3>
+                <p>Rockstar has not announced cryptocurrency or real-money conversion systems for GTA VI.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/vice-city-returns" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Vice City returns</h3>
+                <p>Vice City is officially part of GTA VI’s Leonida.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-gta-plus-month" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Digital GTA 6 pre-orders include a free month of GTA+</h3>
+                <p>Alongside the Vintage Vice City Pack for all pre-orders.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-advanced-tracker" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 cars with advanced trackers ping your location</h3>
+                <p>Drive a tracked car too slowly and police will know where it is.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-car-trunks" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">GTA 6 car trunks: loot them, or hide inside</h3>
+                <p>You can loot vehicle trunks, shoot out engines to disable cars, and stuff bodies — or yourself — into a trunk.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-ultimate-upgrade-anytime" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">The GTA 6 Ultimate Edition Upgrade can be bought any time</h3>
+                <p>Standard owners can upgrade later, including boxed copies once redeemed.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-repair-before-fencing" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Repair stolen cars before fencing them in GTA 6</h3>
+                <p>Car fences pay less for damaged vehicles.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-focus-weak-points" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">GTA 6 Focus Mode highlights vehicle weak points</h3>
+                <p>The Dead Eye-style Focus Mode can reveal a vehicle’s weak points, not just tag enemies.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-platforms-and-date" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI launches on PS5 and Xbox Series X|S</h3>
+                <p>Rockstar lists PS5 and Xbox Series X|S for November 19, 2026.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-code-region-lock" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 PlayStation codes are region-locked; Xbox codes aren’t</h3>
+                <p>Match your code to your PlayStation account’s region.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-gym-together" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 gym trips together are 2-for-1</h3>
+                <p>Work out as a couple and both characters’ stats improve.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-vehicle-fuel" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">GTA 6 vehicles use fuel — balanced between GTA V and RDR2</h3>
+                <p>Cars can run out of fuel, but the RP systems are tuned so they’re texture, not a chore.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-ps5-pro-enhanced" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 is PS5 Pro Enhanced</h3>
+                <p>PlayStation’s page carries the label; the improvements aren’t detailed yet.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-snapmatic-read-only" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 Snapmatic is read-only</h3>
+                <p>Follow and browse, but Jason and Lucia can’t post — they’re on the run.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-partner-abandonment" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">Abandon your GTA 6 partner and the relationship suffers</h3>
+                <p>Leaving Jason or Lucia behind during a chase or heist makes them angry and dents your relationship.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-single-player-at-launch" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Rockstar calls GTA 6 a single-player experience</h3>
+                <p>No online mode has been announced for launch.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-ankle-tag" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Lucia’s ankle tag is part of GTA 6’s story</h3>
+                <p>Rockstar says the tag is how Jason and Lucia are brought together.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-3d-heist-planning" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">GTA 6 heists are planned on a 3D map with payout estimates</h3>
+                <p>The in-game map is fully 3D and doubles as a heist planner — showing entrances and an estimated take.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-merch-collection" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">The official GTA VI merch collection is out</h3>
+                <p>Tees, caps, a Vice City Zippo, money clip, keychain, totes and stickers.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-open-missions" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 missions can turn into systemic police chases</h3>
+                <p>Multiple escape routes and missions that blend into free-roam systems.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-physical-loot" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--investigating">Investigating</span>
+                <h3 style="margin-top:8px">GTA 6 loot is physical — you grab each item by hand</h3>
+                <p>Safe contents are real objects: Jason collected diamonds, cash and gold one at a time, each with its own animation.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-goodtime-state-collectors-box" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI Goodtime State collector’s box arrives November 19</h3>
+                <p>A limited Macca the Gator merch box — the game is sold separately.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-radio-stations" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 radio: six stations revealed</h3>
+                <p>Cocoteo FM, Back Country Radio, AfroBank FM, The Chamber 106.6, Flash FM and Dirty South Classics.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/lucia-first-female-lead" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Lucia is GTA VI’s female playable lead</h3>
+                <p>Lucia is one of GTA VI’s two officially introduced protagonists.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-podcasts-headphones" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA 6 adds podcasts and on-foot listening</h3>
+                <p>On-demand podcasts and headphones let you listen outside vehicles.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/first-trailer-record" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">The first trailer broke viewing records</h3>
+                <p>GTA VI’s debut trailer achieved record-breaking early viewership.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/gta-6-the-album" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI: The Album launches 19 November</h3>
+                <p>34 original tracks with Atlantic Records; six singles already out.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/leonida-beyond-vice-city" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">Leonida is more than Vice City</h3>
+                <p>Official material shows a state-wide setting, not only a single city.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/first-mainline-since-gta-v" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">The first mainline GTA since GTA V</h3>
+                <p>GTA VI is the next numbered Grand Theft Auto after 2013’s GTA V.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/second-trailer-may-2025" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">A second trailer followed in May 2025</h3>
+                <p>Rockstar released GTA VI’s second trailer in May 2025.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/discover/release-date-november-2026" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="conf conf--verified">Verified</span>
+                <h3 style="margin-top:8px">GTA VI is dated for November 19, 2026</h3>
+                <p>Rockstar currently lists November 19, 2026 for PS5 and Xbox Series X|S.</p>              </div>
+            </a>
+                  </div>
+          </div>
+  </section>
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+
+</body>
+</html>

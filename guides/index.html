@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 Guides, Tips &amp; News — GTAIndex · Fan Project demo</title>
+<meta name="description" content="Practical GTA VI help and confirmed news — every claim sourced and dated.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides" aria-current="page">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+    <section class="section" style="padding-top:40px">
+    <div class="wrap">
+      <div class="section-head"><div><span class="eyebrow">Guides &amp; news</span><h2>Guides &amp; articles</h2><p>Practical help and confirmed Grand Theft Auto VI news — every claim sourced.</p></div></div>
+
+              <div class="articlelist">
+                                  <a href="/GTAIndex-Demo/guides/gtabase-repair-jasons-house-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>How to repair Jason&#039;s house</h3>
+                <p>The optional four-repair task at the Key Lento house: how to do each repair, and why it can be missed.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-fast-travel-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>How to fast travel in GTA 6</h3>
+                <p>GTA 6 has no map fast travel. Here is how Paradise Taxi and RydeMe work, and what each one costs.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-day-one-in-leonida-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 day one in Leonida</h3>
+                <p>What to do in your first hour: the opening sequence, the first missions, and habits for cash, cars and the phone.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-jasons-house-activities" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>Activities in Jason&#039;s house</h3>
+                <p>Everything you can do at Jason&#039;s house in Chapter 1, from the gym and basketball to the wardrobe and the stash spot.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-home-renovations-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 home renovations at Key Lento</h3>
+                <p>The five optional renovation tasks at Jason&#039;s Key Lento house, where to find each one, and how they help your relationship with Lucia.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-money-making-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>How to make money in GTA 6</h3>
+                <p>The three money types, the robbery loop, fences, and what to spend on. Based on the GTABase guide.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-pc-cheats" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 PC cheats</h3>
+                <p>GTA 6 is not on PC yet, so there is no PC cheat list. What the console lists tell us, and what is only a guess.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-xbox-cheats" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 Xbox cheats</h3>
+                <p>How Xbox Series X|S cheats work, which match the PS5 list, and how they affect achievements.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-ps5-cheats" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 PS5 cheats</h3>
+                <p>How PS5 cheats unlock and activate, the money and Rhino Tank cheats, and the trade-off of using them.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-fastest-motorcycles-ranking" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 fastest motorcycles</h3>
+                <p>The 19 motorcycles so far, which two have a score, and why no fastest bike is named yet.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-fastest-cars-ranking" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 fastest cars</h3>
+                <p>The top five fastest cars on the Speed stat, the Ultimate-only cars, and why no real top speeds are listed yet.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-best-vehicles-ranking" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 best sports and super cars</h3>
+                <p>The top seven sports and super cars by road and off-road rating so far, and why the rest are unrated.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-editions-and-pre-order-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 editions and pre-order bonus</h3>
+                <p>Standard and Ultimate editions, what the Vintage Vice City Pack includes, and the Ultimate-only extras and shops.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-achievements-and-trophies-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 achievements and trophies</h3>
+                <p>All 55 PS5 trophies and Xbox achievements, the hidden ones, and the trickiest unlocks.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-controls-guide-ps5-xbox" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 controls on PS5 and Xbox</h3>
+                <p>Default button layout for PS5 and Xbox Series X|S, plus the Classic and left-handed control schemes.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-map-and-locations-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 map and locations guide</h3>
+                <p>The five counties of Leonida, the main towns in each, and where Jason and Lucia start.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-random-events-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 random events</h3>
+                <p>What is known so far about random events in GTA 6, and what is still unconfirmed.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-side-activities-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 side activities hub</h3>
+                <p>The 16 side activities confirmed so far, from fishing and pool to scuba diving and street races, and which ones count toward 100%.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-strangers-and-freaks-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 Strangers and Freaks guide</h3>
+                <p>The 35 Strangers and Freaks entries, which character strands they belong to, and the 8-strand trophy requirement.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-story-missions-list" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 story missions by chapter</h3>
+                <p>A prologue and five chapters, with the chapter starts, the $15,000 requirement for Prepare for Vice City, and what is missable.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-100-percent-completion-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 100% completion checklist</h3>
+                <p>What counts toward 100% in GTA 6, how the completion score is weighted, and the required items.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-launch-day-tips-and-tricks" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 launch-day tips and tricks</h3>
+                <p>Launch-day tips for GTA 6 sorted by how well they are sourced: stated in beginner guides, reported by players, or not yet known. Covers Focus Mode, cash, robberies, travel, saves and more.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-merch-rockstar-store-collection" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">News</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/hero-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-merch-rockstar-store-collection/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="GTA VI merch from the Rockstar Store: blue VI tee, the full collection and VI caps"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">12 Oct 2026</span>
+                <h3>Official GTA 6 merch: the Rockstar Store collection and collector’s box</h3>
+                <p>Rockstar’s Grand Theft Auto VI Collection is out: VI and Macca the Gator tees, caps, a Vice City Zippo and money clip, keychain, totes and stickers — plus the Goodtime State collector’s box arriving November 19.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-ps5-pro-xbox-performance" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/site/skydive/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/site/skydive/hero-640.jpg 640w, /GTAIndex-Demo/media/site/skydive/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Lucia skydives over Vice City in Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">12 Oct 2026</span>
+                <h3>GTA 6 on PS5, PS5 Pro and Xbox Series X|S: performance explained</h3>
+                <p>GTA 6 is PS5 Pro Enhanced, but what that means hasn’t been detailed. Previews ran at 30fps with no 60fps mode announced. Every confirmed console feature, and what’s still unknown.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-editions-price-compared" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/edition-2026/squalo-02-640.avif 640w, /GTAIndex-Demo/media/edition-2026/squalo-02-1280.avif 1280w" sizes="(max-width:700px) 100vw, 360px">
+      <img src="/GTAIndex-Demo/media/edition-2026/squalo-02-1280.jpg"
+       srcset="/GTAIndex-Demo/media/edition-2026/squalo-02-640.jpg 640w, /GTAIndex-Demo/media/edition-2026/squalo-02-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Shitzu Squalo watercraft from GTA VI Ultimate Edition"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">12 Oct 2026</span>
+                <h3>GTA 6 editions and price: Standard vs Ultimate compared</h3>
+                <p>Standard is $79.99, Ultimate is $99.99 (US). Everything each edition includes, the Vintage Vice City Pack and GTA+ bonuses, the separate upgrade, and why the boxed version has no disc.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-launch-guide-preload-unlock-time-download-size" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/regions/vice-city/vice_city_08-1280.jpg"
+       srcset="/GTAIndex-Demo/media/regions/vice-city/vice_city_08-640.jpg 640w, /GTAIndex-Demo/media/regions/vice-city/vice_city_08-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Vice City — Leonida location, scene 8"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">12 Oct 2026</span>
+                <h3>GTA 6 launch guide: pre-load, unlock time and download size</h3>
+                <p>Pre-load opens at local midnight on November 12. What’s known about the unlock time and download size, what’s in the box (no disc), and a checklist to be playing the moment GTA 6 unlocks.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-faq" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/regions/vice-city/vice_city_01-1280.jpg"
+       srcset="/GTAIndex-Demo/media/regions/vice-city/vice_city_01-640.jpg 640w, /GTAIndex-Demo/media/regions/vice-city/vice_city_01-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Vice City — Leonida location, scene 1"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">12 Oct 2026</span>
+                <h3>GTA 6 FAQ: every big question answered before launch</h3>
+                <p>Release date, unlock time, pre-load, download size, price, editions, PS5 Pro, 60fps, PC, online and more — every common GTA 6 question answered with what Rockstar has actually confirmed.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/how-to-use-the-gta-6-interactive-map" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/how-to-use-the-gta-6-interactive-map/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/how-to-use-the-gta-6-interactive-map/hero-640.jpg 640w, /GTAIndex-Demo/media/guides/how-to-use-the-gta-6-interactive-map/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="GTAIndex map of Vice City with a pink GPS route from Vice Beach to the airport"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">11 Oct 2026</span>
+                <h3>How to use the GTA 6 interactive map (with GPS directions)</h3>
+                <p>Search places, filter by type, open place pages and plan GPS-style routes across Leonida — click two points and get a pink route with turn-by-turn steps, street names, distance and time.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-radio-stations-and-soundtrack" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">News</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/highway-vice-city-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/highway-vice-city-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/highway-vice-city-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Traffic on a busy Leonida highway with the Vice City skyline behind it, from Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">10 Oct 2026</span>
+                <h3>GTA 6 radio stations, podcasts and soundtrack album</h3>
+                <p>Rockstar reveals six GTA VI radio stations — Cocoteo FM, Back Country Radio, AfroBank FM, The Chamber 106.6, Flash FM and Dirty South Classics — plus podcasts, on-foot listening and a 34-track album out 19 November.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-ign-full-interview-rob-nelson" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">News</span><picture>
+      <img src="/GTAIndex-Demo/media/characters/jason-lucia/together_01-1280.jpg"
+       srcset="/GTAIndex-Demo/media/characters/jason-lucia/together_01-640.jpg 640w, /GTAIndex-Demo/media/characters/jason-lucia/together_01-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason and Lucia riding through Vice City in a convertible"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">10 Oct 2026</span>
+                <h3>GTA 6: what IGN’s full Rob Nelson interview adds</h3>
+                <p>IGN published its full Rockstar North interview. New details: NPCs notice eavesdropping, a new outfit clears heat, escape on foot at three stars, gym 2-for-1, read-only Snapmatic, and missions that open into police chases.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-elrubius-rockstar-north-hands-on" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">News</span><picture>
+      <img src="/GTAIndex-Demo/media/regions/vice-city/Vice_City_12-1280.jpg"
+       srcset="/GTAIndex-Demo/media/regions/vice-city/Vice_City_12-640.jpg 640w, /GTAIndex-Demo/media/regions/vice-city/Vice_City_12-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Vice City streets in Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">4 Sep 2026</span>
+                <h3>Everything ElRubius saw of GTA 6 at Rockstar North</h3>
+                <p>A creator flown to Rockstar North recaps a hands-on GTA VI session: real-time interiors with no loading, reactive crowds, brutal police physics, pet-the-dog events, car-door melee, an emergent beach date, and heists you plan in 3D.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-combat-aiming-weapon-handling" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-combat-aiming-weapon-handling/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-combat-aiming-weapon-handling/hero-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-combat-aiming-weapon-handling/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason taking aim with a rifle in Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">2 Sep 2026</span>
+                <h3>GTA 6 combat, aiming &amp; weapon handling explained</h3>
+                <p>How gunplay works in GTA VI: free-aim by default, tuneable aim assist, visible weapon carrying and NPC reactions, heavier recoil, melee block-and-parry, and RDR2-style movement — from Rob Nelson and hands-on previewers.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-vintage-vice-city-pack-pre-order-bonuses" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">News</span><picture>
+      <img src="/GTAIndex-Demo/media/vehicles/vapid-stanier/vintage_vice_city_pack_vapid_stanier_01-1280.jpg"
+       srcset="/GTAIndex-Demo/media/vehicles/vapid-stanier/vintage_vice_city_pack_vapid_stanier_01-640.jpg 640w, /GTAIndex-Demo/media/vehicles/vapid-stanier/vintage_vice_city_pack_vapid_stanier_01-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Vapid Stanier — GTA VI Ultimate Edition, view 1"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">1 Sep 2026</span>
+                <h3>GTA VI pre-order bonuses: the Vintage Vice City Pack</h3>
+                <p>The Vintage Vice City Pack brings a ’55 Vapid Stanier, Shore Court garage, period looks and an exclusive weapon pattern to eligible pre-orders.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-ultimate-edition-every-confirmed-bonus" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">News</span><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/edition-2026/electric-fang-640.avif 640w, /GTAIndex-Demo/media/edition-2026/electric-fang-1280.avif 1280w" sizes="(max-width:700px) 100vw, 360px">
+      <img src="/GTAIndex-Demo/media/edition-2026/electric-fang-1280.jpg"
+       srcset="/GTAIndex-Demo/media/edition-2026/electric-fang-640.jpg 640w, /GTAIndex-Demo/media/edition-2026/electric-fang-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Electric Fang Tattoo, an Ultimate Edition benefit for GTA VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">1 Sep 2026</span>
+                <h3>GTA VI Ultimate Edition: every confirmed bonus</h3>
+                <p>The Ultimate Edition adds vehicles, weapons, looks, garages, businesses and special commissions across Jason and Lucia’s story.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-car-handling-physics-tgg-broughy1322" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-car-handling-physics-tgg-broughy1322/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-car-handling-physics-tgg-broughy1322/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-car-handling-physics-tgg-broughy1322/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="A Leonida local using a phone beside a vehicle"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>More info on GTA 6 car handling</h3>
+                <p>TGG and Broughy1322 on GTA VI vehicle physics, vehicle classes, fuel, mod shops and the preview’s reported seamless vehicle systems.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-safehouses-and-character-customization" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/uploads/01m19ytth6x8m504wp36784znd/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m19ytth6x8m504wp36784znd/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m19ytth6x8m504wp36784znd/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="GTA VI safehouses and character customisation"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA VI safehouses and character customisation</h3>
+                <p>Safehouses are discussed as more interactive personal spaces; their systems and character-stat effects are not fully confirmed.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-crime-robberies-heists-jobs" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-heists-robberies-and-jobs/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-heists-robberies-and-jobs/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-heists-robberies-and-jobs/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason and Lucia inside a vault"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 Crime System: Robberies, Heists and Jobs</h3>
+                <p>GTA 6 crime includes robberies, heists, car theft, drug runs and duo missions for Jason and Lucia, with witnesses and police shaping every job.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-extended-look-new-mechanics" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/uploads/01m19yw4sqq66cxvwwbsq8pa5q/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m19yw4sqq66cxvwwbsq8pa5q/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m19yw4sqq66cxvwwbsq8pa5q/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="GTA 6 Extended Look Details: New Mechanics Confirmed"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 Extended Look Details: New Mechanics Confirmed</h3>
+                <p>GTA 6 Extended Look details reveal a new wanted system, car theft, combat, phone apps, Criminal Profile, activities, maps and more.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-jason-and-lucia-story" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-jason-and-lucia-story/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-jason-and-lucia-story/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-jason-and-lucia-story/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason and Lucia together at sunset"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 story: Jason and Lucia’s Bonnie &amp; Clyde tale</h3>
+                <p>Who Jason and Lucia are, their Bonnie-and-Clyde relationship, and what Rockstar has confirmed about the GTA 6 story — kept spoiler-free.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-vehicles-the-full-list" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-vehicles-the-full-list/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-vehicles-the-full-list/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-vehicles-the-full-list/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason beside a helicopter and patrol boat"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 vehicles: cars, bikes and boats so far</h3>
+                <p>The vehicles shown in the GTA 6 reveal and Extended Look, plus every car in the database — cars, bikes, boats and off-roaders across Leonida.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-weapons-the-arsenal" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-weapons-the-arsenal/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-weapons-the-arsenal/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-weapons-the-arsenal/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason with a handgun and ammunition"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 weapons: the arsenal so far</h3>
+                <p>The weapons shown in the GTA 6 Extended Look, plus the recurring GTA arsenal likely to return — with links to every weapon in the database.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-police-how-to-lose-the-cops" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-police-how-to-lose-the-cops/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-police-how-to-lose-the-cops/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-police-how-to-lose-the-cops/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="An armed character in the shadows"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 police: how to lose the cops</h3>
+                <p>GTA 6’s six-star wanted system explained — how the police identify you by witnesses, clothing, vehicle and cameras, and exactly how to shake them.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-vice-city-what-we-know" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/regions/vice-city/Vice_City_10-1280.jpg"
+       srcset="/GTAIndex-Demo/media/regions/vice-city/Vice_City_10-640.jpg 640w, /GTAIndex-Demo/media/regions/vice-city/Vice_City_10-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Vice City in Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 Vice City: everything we know about the returning city</h3>
+                <p>Vice City is back as the heart of Leonida in GTA 6. Here’s what’s confirmed about Rockstar’s reimagined Miami — and what isn’t.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-activities-everything-you-can-do" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/regions/leonida-keys/Leonida_Keys_06-1280.jpg"
+       srcset="/GTAIndex-Demo/media/regions/leonida-keys/Leonida_Keys_06-640.jpg 640w, /GTAIndex-Demo/media/regions/leonida-keys/Leonida_Keys_06-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Leonida Keys in Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 activities: everything you can do in Leonida</h3>
+                <p>Scuba diving, jet skis, basketball, dirt bikes and more — the activities confirmed in the GTA 6 Extended Look, plus the series staples likely to return.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-hud-and-wanted-system-explained" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-hud-and-wanted-system-explained/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Lucia driving with police lights behind her"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 HUD and wanted system explained</h3>
+                <p>Every part of the GTA 6 HUD from the Extended Look — the new wanted system that tracks your description, the stat bars, the Weapons and Items wheels, and what those two money counters really mean.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/how-to-switch-between-jason-and-lucia" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/how-to-switch-between-jason-and-lucia/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/how-to-switch-between-jason-and-lucia/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/how-to-switch-between-jason-and-lucia/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason and Lucia in a car"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>How to switch between Jason and Lucia in GTA 6</h3>
+                <p>GTA 6’s dual protagonists explained — how character switching works, based on the official Extended Look.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-characters-full-cast" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-characters-full-cast/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-characters-full-cast/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-characters-full-cast/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="A group gathering in Leonida"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 characters: the cast so far</h3>
+                <p>Jason, Lucia and the supporting cast of Grand Theft Auto VI, from Rockstar’s official profiles — with links to every character page.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-pc-release" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/is-gta-6-coming-to-pc/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/is-gta-6-coming-to-pc/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/is-gta-6-coming-to-pc/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Lucia in a neon-lit car"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 PC Release: Is Grand Theft Auto VI Coming to PC?</h3>
+                <p>GTA 6 PC has not been announced. Here is what Rockstar confirms for PS5 and Xbox Series X|S, plus what GTA 5 and RDR2 history suggests.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-release-date-platforms-everything-we-know" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/regions/vice-city/Vice_City_11-1280.jpg"
+       srcset="/GTAIndex-Demo/media/regions/vice-city/Vice_City_11-640.jpg 640w, /GTAIndex-Demo/media/regions/vice-city/Vice_City_11-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Vice City in Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 release date, platforms and everything we know</h3>
+                <p>When GTA 6 comes out, what it runs on, and every confirmed detail so far — the November 19, 2026 date, PS5 and Xbox Series X|S, and more.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gta-6-netflix-extended-look-everything-confirmed" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-netflix-extended-look-everything-confirmed/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-netflix-extended-look-everything-confirmed/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-netflix-extended-look-everything-confirmed/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason and Lucia walking from a burning car"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>GTA 6 Netflix Extended Look: everything confirmed</h3>
+                <p>The 26-minute Extended Look was the first real gameplay for GTA 6 — here’s every confirmed detail, from the morality system to the November 19 release.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/jason-and-lucia-the-two-protagonists" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/jason-and-lucia-the-two-protagonists/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/jason-and-lucia-the-two-protagonists/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/jason-and-lucia-the-two-protagonists/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Jason and Lucia driving together"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>Jason and Lucia: GTA VI’s two protagonists</h3>
+                <p>The first dual leads in the modern series — who they are, how they play, and what’s still unconfirmed.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/the-world-of-leonida-map-explained" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/regions/grassrivers/Grassrivers_05-1280.jpg"
+       srcset="/GTAIndex-Demo/media/regions/grassrivers/Grassrivers_05-640.jpg 640w, /GTAIndex-Demo/media/regions/grassrivers/Grassrivers_05-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Grassrivers in Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>The world of Leonida: GTA VI’s map explained</h3>
+                <p>What Rockstar has actually shown of GTA VI’s setting — Vice City, the keys and the wetlands — and what’s still guesswork.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/what-rockstar-confirmed-about-gta-vi" class="articlecard">
+              <div class="articlecard__img"><span class="articlecard__tag">Article</span><picture>
+      <img src="/GTAIndex-Demo/media/guides/what-rockstar-confirmed-about-gta-vi/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/what-rockstar-confirmed-about-gta-vi/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/what-rockstar-confirmed-about-gta-vi/hero-diverse-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 360px" alt="Lucia outside a Leonida cash store"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>              <div class="articlecard__body">
+                <span class="articlecard__kind">30 Aug 2026</span>
+                <h3>What Rockstar confirmed about GTA VI</h3>
+                <p>The clearest picture yet of how Grand Theft Auto VI plays — and how big it has become — from Rockstar&#039;s own words.</p>              </div>
+            </a>
+                  </div>
+          </div>
+  </section>
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+
+</body>
+</html>

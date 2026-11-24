@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 Crime System: Robberies, Heists and Jobs — GTAIndex · Fan Project demo</title>
+<meta name="description" content="GTA 6 crime includes robberies, heists, car theft, drug runs and duo missions for Jason and Lucia, with witnesses and police shaping every job.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides" aria-current="page">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<article class="rec" id="article">
+
+  
+  <section class="rec-hero ">
+          <div class="rec-hero__bg"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/guides/gta-6-heists-robberies-and-jobs/hero-diverse-640.webp 640w, /GTAIndex-Demo/media/guides/gta-6-heists-robberies-and-jobs/hero-diverse-1280.webp 1280w" sizes="100vw">
+    <img src="/GTAIndex-Demo/media/guides/gta-6-heists-robberies-and-jobs/hero-diverse-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-heists-robberies-and-jobs/hero-diverse-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-heists-robberies-and-jobs/hero-diverse-1280.jpg 1280w"
+       sizes="100vw" alt="Jason and Lucia inside a vault"
+               loading="eager" decoding="async" class="">
+</picture>
+</div>
+      <div class="rec-hero__scrim"></div>
+        <div class="rec-hero__inner">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/GTAIndex-Demo/guides">Guides</a> <span>/</span> <span aria-current="page">GTA 6 Crime System: Robberies, Heists and Jobs</span></nav>
+      <div class="rec-eyebrow">
+        <span class="chip">Article</span>
+        <span class="chip">30 Aug 2026</span>      </div>
+      <h1 class="display rec-title">GTA 6 Crime System: Robberies, Heists and Jobs</h1>
+      <p class="rec-sub">GTA 6 crime includes robberies, heists, car theft, drug runs and duo missions for Jason and Lucia, with witnesses and police shaping every job.</p>    </div>
+  </section>
+
+  
+  <section class="section" style="padding-top:clamp(28px,4vw,48px)">
+    <div class="wrap article-wrap">
+      <div class="prose article-body reveal"><h1>GTA 6 Crime System: Robberies, Heists, Car Theft and Criminal Jobs</h1>
+<p>The <strong>GTA 6 crime system</strong> goes far beyond straightforward shootouts. Rockstar's <a href="/GTAIndex-Demo/guides/gta-6-extended-look-new-mechanics">Extended Look</a> showed Jason and Lucia taking part in store robberies, larger scores, vehicle theft, drug-related work and protection jobs, while an expanded police system makes witnesses, timing and escape plans matter.</p>
+<p>Crime also appears more closely connected to the story than in previous GTA games. Jobs can develop into larger situations, Jason and Lucia can work together or separately, and consequences can carry from one sequence into the next.</p>
+<h2>GTA 6 Offers Several Ways to Make Money Through Crime</h2>
+<p>Rockstar's August 27, 2026 Extended Look showed a broad selection of criminal work rather than presenting every mission as another gunfight.</p>
+<p>Activities shown or described include:</p>
+<ul>
+<li><strong>Store and convenience-store robberies</strong> involving Jason and Lucia working together.</li>
+<li><strong>Bank robberies and larger scores</strong> that can develop into more involved sequences.</li>
+<li><strong>Diner robberies</strong> and other armed stick-ups.</li>
+<li><strong>Car theft for profit</strong>, with stolen vehicles potentially sold through criminal contacts or fences.</li>
+<li><strong>Drug retrieval jobs</strong> connected to Leonida's criminal underworld.</li>
+<li><strong>Bodyguard and protection work</strong> that can escalate into violent encounters.</li>
+</ul>
+<p>The variety reinforces the idea that earning money through crime will involve different risks, objectives and approaches.</p>
+<p><img src="/GTAIndex-Demo/media/inline/Lucia_Caminos_08-1280.jpg" alt="Convenience-store hold-ups are early, easy money." /></p>
+<p><em>Convenience-store hold-ups are early, easy money.</em></p>
+<h2>Store and Convenience Robberies Make the Duo Work Together</h2>
+<p>Smaller robberies demonstrate how Jason and Lucia can operate as a pair.</p>
+<p>The Extended Look shows the two protagonists coordinating during a robbery, with one character dealing with the person behind the counter while the other covers the entrance and keeps watch.</p>
+<p>That creates the classic two-person robbery setup:</p>
+<ul>
+<li>One person handles the cash.</li>
+<li>The other watches the room or door.</li>
+<li>Both need to leave before the situation escalates.</li>
+</ul>
+<p>The character you are not directly controlling can continue helping through AI behavior, allowing Jason and Lucia to operate together even when the player controls only one of them.</p>
+<h2>GTA 6 Bank Robberies Bring Bigger Risks</h2>
+<p>Banks are also part of GTA VI's criminal activity.</p>
+<p>The Extended Look includes larger robbery scenarios in addition to small-business stick-ups, suggesting a progression from relatively quick crimes to more substantial scores involving additional steps and greater police risk.</p>
+<p>These robberies are not presented simply as disconnected money-making minigames. They are woven into Jason and Lucia's wider criminal story, where a job going wrong can influence what happens next.</p>
+<p>Rockstar's official premise has always centered on that idea: Jason and Lucia become caught in a conspiracy stretching across Leonida after an apparently easy score goes wrong.</p>
+<h2>Diner Robberies Return in GTA 6</h2>
+<p>The <strong>diner robbery</strong> is another criminal scenario shown in the Extended Look.</p>
+<p>The sequence is particularly notable because an earlier development version of a diner robbery appeared in the unauthorized 2022 GTA VI leak. Rockstar's finished promotional footage later showed a much more developed version of a similar situation.</p>
+<p>What matters for gameplay is that diners and other businesses can form part of GTA VI's robbery ecosystem, giving Jason and Lucia smaller targets alongside larger heists.</p>
+<h2>Car Theft Is Now a Money-Making Business</h2>
+<p>Stealing cars remains fundamental to Grand Theft Auto, but GTA VI makes vehicle theft more involved.</p>
+<p>Instead of every parked car being immediately accessible, different vehicles can require different methods or tools. Rockstar has shown mechanics such as using a <strong>slim jim</strong> on suitable vehicles, while more advanced cars may require better equipment.</p>
+<p>Players can still forcibly carjack occupied vehicles, but stealing unattended vehicles can demand more preparation.</p>
+<p>The system can also turn theft into a source of income. Stolen vehicles can have a resale value, giving players an incentive to target particular cars rather than stealing whatever happens to be closest.</p>
+<p>For a deeper breakdown, see how <a href="/GTAIndex-Demo/discover/gta-6-car-theft-reworked">car theft has been reworked in GTA 6</a>.</p>
+<p>Potential complications include:</p>
+<ul>
+<li>Vehicle alarms.</li>
+<li>Tracking systems.</li>
+<li>Different security levels.</li>
+<li>The tools required to gain access.</li>
+<li>The vehicle's resale value.</li>
+<li>Police attention generated during the theft.</li>
+</ul>
+<p>Together, these additions turn car theft from a nearly automatic action into a more deliberate criminal activity.</p>
+<h2>Drug Retrieval Jobs Connect Jason to Leonida's Underworld</h2>
+<p>The Extended Look also shows <strong>drug-related criminal work</strong>.</p>
+<p>Jason's background makes this particularly relevant. Rockstar's official character biography says that after serving in the Army, Jason ended up in the Leonida Keys working for local drug runners.</p>
+<p>A drug retrieval job shown during the Extended Look develops into a violent confrontation, demonstrating how an apparently straightforward assignment can escalate into something much more dangerous.</p>
+<p>This also supports Rockstar's broader approach to mission design: criminal jobs are tied to characters and relationships rather than existing only as isolated objectives.</p>
+<h2>Bodyguard Work Can Turn Into a Firefight</h2>
+<p>Not every GTA VI job begins as a robbery.</p>
+<p>The Extended Look includes <strong>bodyguard or protection work</strong> involving an executive at a secured location. The situation escalates when armed attackers enter the building, turning the assignment into a firefight and attempted kidnapping.</p>
+<p>The sequence is important because Jason and Lucia are separated inside the location.</p>
+<p>Gameplay can move between their perspectives as they deal with threats in different areas of the building, demonstrating how the dual-protagonist system can be built directly into mission design.</p>
+<h2>GTA 6 Heists Are Connected to Characters and Story</h2>
+<p>One of the biggest changes appears to be how criminal jobs fit into the wider narrative.</p>
+<p>Rather than every mission functioning as an isolated objective, the Extended Look presents crimes as <strong>character moments with consequences</strong>.</p>
+<p>A drug pickup can lead into a shootout. Protection work can become a kidnapping attempt. A robbery can lead to a police pursuit, a destroyed getaway vehicle and whatever consequences follow afterward.</p>
+<p>This structure makes the job itself only one part of the sequence.</p>
+<p>A typical criminal encounter might involve:</p>
+<ul>
+<li>Planning or accepting the work.</li>
+<li>Reaching the target.</li>
+<li>Completing the robbery or objective.</li>
+<li>Reacting when something unexpectedly goes wrong.</li>
+<li>Escaping responding police or hostile criminals.</li>
+<li>Dealing with the aftermath.</li>
+</ul>
+<p>Rockstar has also emphasized Jason and Lucia's dependence on one another. The official story description says the pair are forced to rely on each other after an easy score goes wrong and pulls them into a larger Leonida-wide conspiracy.</p>
+<h2>Some Missions Let Jason and Lucia Take Different Roles</h2>
+<p>GTA VI's two-protagonist setup gives Rockstar more flexibility in how jobs unfold.</p>
+<p>During shared sequences, <strong>Jason and Lucia can perform different roles</strong>. One may drive while the other shoots, watch an entrance while the other handles a robbery, or deal with threats in a separate part of the same location.</p>
+<p>The Extended Look also demonstrates seamless transitions between the protagonists during active gameplay.</p>
+<p>That means a mission does not always have to lock the player into one perspective for its entire duration.</p>
+<p>Depending on the scenario, the pair can:</p>
+<ul>
+<li>Work together in the same location.</li>
+<li>Operate in different parts of a mission area.</li>
+<li>Handle different tasks during an escape.</li>
+<li>Drive and shoot as a team.</li>
+<li>Complete certain activities separately.</li>
+</ul>
+<p>Reporting around the Extended Look also indicates that some jobs can involve choices over whether the protagonists tackle work together or separately. Rockstar has not, however, published a complete set of rules explaining exactly which missions offer this freedom.</p>
+<h2>You Can Switch Between Jason and Lucia During Jobs</h2>
+<p>The Extended Look provides the clearest demonstration yet of GTA VI's <strong>character-switching system</strong>.</p>
+<p>Players can move between Jason and Lucia during gameplay, including in mission sequences. When they are working together, the protagonist you are not controlling can continue acting with AI support.</p>
+<p>For example, the inactive character may:</p>
+<ul>
+<li>Drive.</li>
+<li>Fire at enemies.</li>
+<li>Help during a robbery.</li>
+<li>Handle another part of an ongoing mission.</li>
+</ul>
+<p>One sequence shows communication between Jason and Lucia helping connect their separate perspectives during an attack inside a building.</p>
+<p>The game also shows the protagonists operating independently elsewhere in Leonida, with transitions between their locations reminiscent of GTA V's character switching but built around two protagonists rather than three.</p>
+<h2>Jason and Lucia Can Communicate Through Their Phones</h2>
+<p>Phones are integrated into GTA VI's character interactions rather than functioning only as a menu.</p>
+<p>Jason and Lucia can call and text each other, and preview reporting surrounding the Extended Look indicates that the protagonists can use phone communication when coordinating activities or bringing their partner into certain situations.</p>
+<p>Text messages can also be incorporated directly into missions.</p>
+<p>This makes communication between the pair part of both storytelling and gameplay instead of simply occurring during cutscenes.</p>
+<h2>AI Controls the Partner You Are Not Playing</h2>
+<p>When Jason and Lucia participate in the same job, players do not have to manually control both characters simultaneously.</p>
+<p>The game can let the <strong>AI control the other protagonist</strong>.</p>
+<p>This makes two-person robberies particularly practical. Jason could be inside dealing with a cashier while Lucia covers the entrance, for example, without requiring constant switching between them.</p>
+<p>The same principle works in combat and pursuits. One character can drive while the other attacks pursuing enemies, with the AI taking responsibility for whichever role the player is not currently controlling.</p>
+<p>That gives Rockstar room to build missions specifically around the fact that GTA VI has two central protagonists.</p>
+<h2>Time Pressure Makes Robberies More Dangerous</h2>
+<p>Taking too long during a crime can make the situation worse.</p>
+<p>The Extended Look demonstrates that players cannot necessarily remain at a robbery scene indefinitely without consequences. If a store robbery, vault opening or similar crime drags on, police may have enough time to respond and surround the area.</p>
+<p>That creates natural <strong>time pressure</strong>.</p>
+<p>Players may have to decide whether collecting additional money or completing another part of a job is worth increasing the risk of encountering law enforcement outside.</p>
+<p>The result is a more dynamic risk-versus-reward system than simply completing a fixed objective before proceeding to the next mission marker.</p>
+<h2>Witnesses Matter in the GTA 6 Wanted System</h2>
+<p>The police do not necessarily know about every crime the instant it happens.</p>
+<p>GTA VI's reworked wanted mechanics incorporate <strong>witnesses and alarms</strong>, meaning law enforcement generally needs a reason to become aware of a crime rather than automatically detecting illegal activity regardless of circumstances.</p>
+<p>A civilian who witnesses an offense can attempt to report it, while security systems and direct police observation can also create obvious routes to law-enforcement attention.</p>
+<p>This makes the original idea that &quot;heat only rises if a witness reports you&quot; slightly too absolute. Witness reports are an important part of the system, but they are not the only possible way authorities can learn that a crime has occurred.</p>
+<p>For more detail, see our guide to <a href="/GTAIndex-Demo/guides/gta-6-police-how-to-lose-the-cops">GTA 6 police and how to lose the cops</a>.</p>
+<h2>Escaping a Crime Does Not End When You Leave the Scene</h2>
+<p>Once police become involved, GTA VI's expanded wanted system can continue tracking information about Jason and Lucia.</p>
+<p>Police may identify details such as:</p>
+<ul>
+<li>A suspect's appearance.</li>
+<li>Clothing.</li>
+<li>The vehicle involved.</li>
+<li>Whether Jason and Lucia were seen together.</li>
+</ul>
+<p>That gives the getaway phase of a robbery more depth.</p>
+<p>The Extended Look shows Jason and Lucia changing vehicles during an escape and destroying a stolen getaway car. Police awareness does not simply disappear the moment the pair abandon the original vehicle.</p>
+<p>Criminal jobs therefore appear to have three interconnected stages: committing the crime, preventing or managing a report, and successfully escaping afterward.</p>
+<h2>Jason and Lucia Make Two-Person Heists a Core GTA 6 Mechanic</h2>
+<p>The most important element tying these systems together is the relationship between <strong>Jason Duval and Lucia Caminos</strong>.</p>
+<p>GTA V had multiple protagonists, but GTA VI is designed around a criminal partnership. Rockstar's own story description explicitly says Jason and Lucia must rely on each other after becoming caught in a conspiracy across Leonida.</p>
+<p>The Extended Look translates that relationship directly into gameplay.</p>
+<p>One character can be:</p>
+<ul>
+<li>Inside while the other keeps lookout.</li>
+<li>Driving while the other shoots.</li>
+<li>Fighting on another floor of the same building.</li>
+<li>Controlled by the player while their partner acts through AI.</li>
+<li>Contacted through calls or text messages.</li>
+<li>Switched to during an active sequence.</li>
+</ul>
+<p>That makes the two-person structure more than a narrative device. It is part of how GTA VI's robberies, missions and escapes are designed.</p>
+<h2>What Is Confirmed About Crime in GTA 6?</h2>
+<p>Based on Rockstar's August 27, 2026 Extended Look, official GTA VI material and reporting from the gameplay presentation, the criminal systems currently shown or described include:</p>
+<ul>
+<li>Store and business robberies.</li>
+<li>Diner stick-ups.</li>
+<li>Bank robberies and larger scores.</li>
+<li>Drug-related retrieval work.</li>
+<li>Bodyguard and protection jobs.</li>
+<li>More involved parked-car theft.</li>
+<li>Selling valuable stolen vehicles.</li>
+<li>Jason and Lucia performing different roles during shared jobs.</li>
+<li>Character switching during active gameplay and missions.</li>
+<li>AI control of the protagonist the player is not currently using.</li>
+<li>Phone calls and text communication between the protagonists.</li>
+<li>Time pressure during robberies as police response becomes a threat.</li>
+<li>Witnesses and alarms contributing to police awareness.</li>
+<li>Police tracking information about suspects and vehicles.</li>
+<li>Consequences that can continue beyond the initial criminal objective.</li>
+</ul>
+<p>Rockstar has not yet published a complete list of every robbery, heist, payout or criminal activity in GTA VI.</p>
+<p>Specific heists and their rewards can be added to the <a href="/GTAIndex-Demo/database">GTA VI database</a> as Rockstar officially reveals them.</p>
+<h2>Conclusion</h2>
+<p>The <strong>GTA 6 crime system</strong> appears designed to make committing a crime a process rather than a single objective. Store robberies, bank jobs, diner stick-ups, car theft, drug runs and protection work can involve preparation, cooperation, witnesses, police response and an extended getaway.</p>
+<p>Jason and Lucia are central to that design. Players can switch between them during gameplay, allow AI to manage the other protagonist and use their partnership to divide responsibilities during two-person jobs.</p>
+<p>Combined with the reworked witness, wanted and vehicle-theft systems, GTA VI's criminal activities appear more interconnected with the world and story than the simple &quot;commit crime, gain wanted stars, escape&quot; loop associated with earlier entries.</p>
+<p>Sources:</p>
+<ul>
+<li>Rockstar Games — Grand Theft Auto VI official website</li>
+<li>Rockstar Games — Grand Theft Auto VI: An Extended Look, August 27, 2026</li>
+<li>Rockstar Games — GTA VI Jason Duval and Lucia Caminos character profiles</li>
+<li>GamesRadar+ — GTA VI Extended Look coverage and wanted-system reporting</li>
+<li>TechRadar — GTA VI Extended Look live coverage and Jason/Lucia character-switching details</li>
+<li>Beebom — GTA VI Extended Look gameplay breakdown</li>
+</ul>
+<h2>October 2026: fences, impounds and repairs</h2>
+<p>In IGN's full interview, a car fence handed over the door code to a <strong>police impound lot</strong> holding a car they wanted — and the stolen car could be <strong>repaired before delivery</strong>, because fences pay less for damage. Rob Nelson also confirms there are stretches of the story where you must <strong>earn money in the open world</strong> to advance. <a href="/GTAIndex-Demo/guides/gta-6-ign-full-interview-rob-nelson">Full interview breakdown</a>.</p>
+
+</div>
+
+              <p class="source">Source:
+          <a href="https://www.rockstargames.com/fr/videos/rk721912?resolution=2160p" rel="nofollow noopener" target="_blank">GTA VI Extended Look and breakdowns.</a>        </p>
+            <p class="muted" style="font-size:13px">Last verified 10 Oct 2026.</p>    </div>
+
+      </section>
+</article>
+
+<style>
+  .read-progress{position:fixed;top:var(--header-h);left:0;height:3px;width:0;z-index:1200;
+    background:linear-gradient(90deg,var(--sunset-pink),var(--sun-gold));box-shadow:0 0 10px rgba(240,90,157,.5)}
+  .article-wrap{max-width:740px}
+  .article-body{font-size:clamp(1.02rem,1.15vw,1.14rem);line-height:1.75}
+  .article-body > p:first-of-type::first-letter{font-family:'Bebas Neue',Impact,sans-serif;
+    float:left;font-size:3.4em;line-height:.8;padding:6px 12px 0 0;color:var(--sun-gold)}
+  .article-body h2{font-size:clamp(1.4rem,2.4vw,1.9rem);margin:1.8em 0 .5em;letter-spacing:.005em}
+  .article-body h3{font-size:clamp(1.15rem,1.8vw,1.4rem);margin:1.5em 0 .4em}
+  .article-body blockquote{margin:1.4em 0;padding:2px 0 2px 20px;border-left:3px solid var(--sunset-pink);
+    font-size:1.08em;font-style:italic;color:var(--paper)}
+  .article-body img{border-radius:12px;margin:1.4em 0}
+  .article-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.4em 0;
+    font-size:.92em;line-height:1.5;-webkit-overflow-scrolling:touch}
+  .article-body th,.article-body td{padding:10px 14px;text-align:left;vertical-align:top;
+    border-bottom:1px solid rgba(255,255,255,.12)}
+  .article-body th{font-weight:800;color:var(--sun-gold);white-space:nowrap;border-bottom-color:rgba(255,255,255,.28)}
+  .article-body tbody tr:nth-child(odd){background:rgba(255,255,255,.035)}
+</style>
+
+
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script>
+    (function () {
+      var bar = document.getElementById('readProgress'), art = document.getElementById('article');
+      if (!bar || !art) return;
+      function upd() {
+        var r = art.getBoundingClientRect(), vh = window.innerHeight;
+        var scrolled = Math.min(Math.max(-r.top, 0), Math.max(r.height - vh, 1));
+        bar.style.width = (scrolled / Math.max(r.height - vh, 1) * 100).toFixed(1) + '%';
+      }
+      upd();
+      window.addEventListener('scroll', upd, { passive: true });
+      window.addEventListener('resize', upd, { passive: true });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 Extended Look Details: New Mechanics Confirmed — GTAIndex · Fan Project demo</title>
+<meta name="description" content="GTA 6 Extended Look details reveal a new wanted system, car theft, combat, phone apps, Criminal Profile, activities, maps and more.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides" aria-current="page">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<article class="rec" id="article">
+
+  
+  <section class="rec-hero ">
+          <div class="rec-hero__bg"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m19yw4sqq66cxvwwbsq8pa5q/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m19yw4sqq66cxvwwbsq8pa5q/img-1280.webp 1280w" sizes="100vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m19yw4sqq66cxvwwbsq8pa5q/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m19yw4sqq66cxvwwbsq8pa5q/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m19yw4sqq66cxvwwbsq8pa5q/img-1280.jpg 1280w"
+       sizes="100vw" alt="GTA 6 Extended Look Details: New Mechanics Confirmed"
+               loading="eager" decoding="async" class="">
+</picture>
+</div>
+      <div class="rec-hero__scrim"></div>
+        <div class="rec-hero__inner">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/GTAIndex-Demo/guides">Guides</a> <span>/</span> <span aria-current="page">GTA 6 Extended Look Details: New Mechanics Confirmed</span></nav>
+      <div class="rec-eyebrow">
+        <span class="chip">Article</span>
+        <span class="chip">30 Aug 2026</span>      </div>
+      <h1 class="display rec-title">GTA 6 Extended Look Details: New Mechanics Confirmed</h1>
+      <p class="rec-sub">GTA 6 Extended Look details reveal a new wanted system, car theft, combat, phone apps, Criminal Profile, activities, maps and more.</p>    </div>
+  </section>
+
+  
+  <section class="section" style="padding-top:clamp(28px,4vw,48px)">
+    <div class="wrap article-wrap">
+      <div class="prose article-body reveal"><h1>GTA 6 Extended Look Details: The Biggest New Mechanics Confirmed</h1>
+<p>The <strong>GTA 6 Extended Look details</strong> go far beyond the first wave of obvious reveals. A day after Rockstar released its roughly 26-minute showcase on August 27, 2026, players and preview outlets had picked through the PlayStation 5 footage frame by frame, uncovering deeper systems for police pursuits, vehicle theft, combat, phones, character relationships, activities and player behavior.</p>
+<p>The biggest takeaway is that <em>Grand Theft Auto VI</em> is layering several interconnected systems beneath its familiar open-world formula. Police remember what suspects look like, stealing parked cars can require specialized tools, Jason and Lucia can operate together or separately, and a new <strong>Criminal Profile</strong> tracks what kind of criminals they become.</p>
+<h2>GTA 6 Has a Much Smarter Wanted System</h2>
+<p>The police overhaul is significantly deeper than it first appears.</p>
+<p>Rather than automatically giving the player a wanted level whenever an offense occurs, GTA VI tracks <strong>how authorities learn about the crime</strong>.</p>
+<h3>Witnesses Can Report Crimes</h3>
+<p>Witnesses are central to the new system. Civilians who see illegal activity can pull out a phone and attempt to report what happened.</p>
+<p>That means committing an offense without being observed may allow Jason or Lucia to avoid immediate police attention.</p>
+<p>However, the simple statement that you &quot;only&quot; become wanted if a witness calls the police is too absolute. Preview coverage indicates that <strong>alarms, direct police observation and other detection methods</strong> can also alert law enforcement.</p>
+<p>In practice, the system appears to work more like this:</p>
+<ul>
+<li>Commit a crime without being detected and police may never be alerted.</li>
+<li>A civilian witness can report what they saw.</li>
+<li>Security or vehicle alarms can also attract attention.</li>
+<li>Police can react immediately if they directly observe the offense.</li>
+</ul>
+<p>This creates a stronger stealth element around ordinary crime.</p>
+<h3>Police Remember Your Description</h3>
+<p>Getting into another vehicle does not automatically erase police awareness.</p>
+<p>Authorities can retain identifying information about a suspect, including details such as:</p>
+<ul>
+<li>Face.</li>
+<li>Clothing.</li>
+<li>Vehicle.</li>
+<li>Whether Jason and Lucia were seen together.</li>
+</ul>
+<p>That means escaping is less about simply reaching another car and more about <strong>breaking line of sight and removing the identifiers police are searching for</strong>.</p>
+<p>The Extended Look demonstrates this during a getaway in which Lucia destroys a vehicle with a Molotov before moving on.</p>
+<p>Changing vehicles can still help, but it is only one stage of losing the police.</p>
+<h3>Splitting Jason and Lucia Up Can Reduce Police Awareness</h3>
+<p>The dual-protagonist system introduces another escape tactic.</p>
+<p>Preview reporting indicates that when Jason and Lucia are identified as traveling together, <strong>splitting them up can reduce the effectiveness of the police description</strong> and may lower the active wanted level by one star in applicable circumstances.</p>
+<p>This is a particularly interesting use of GTA VI's two-character structure. Instead of character switching existing only for mission variety, the fact that Jason and Lucia can separate becomes part of the wanted-system strategy.</p>
+<p>For a closer look at its icons and identifiers, see our <a href="/GTAIndex-Demo/guides/gta-6-hud-and-wanted-system-explained">GTA 6 HUD and wanted system guide</a>.</p>
+<h3>The Six-Star Wanted Level Returns</h3>
+<p>GTA VI restores the classic <strong>six-star wanted scale</strong>, replacing GTA V's five-star maximum.</p>
+<p>Four stars are visible during the Extended Look footage, while preview reporting confirms that the meter extends to six.</p>
+<p>Exactly what forces appear at five and six stars has not yet been fully detailed by Rockstar.</p>
+<p><img src="/GTAIndex-Demo/media/inline/Jason_and_Lucia_04-1280.jpg" alt="The reworked crime and combat systems in action." /></p>
+<p><em>The reworked crime and combat systems in action.</em></p>
+<h2>Car Theft Has Been Completely Reworked</h2>
+<p>Stealing parked vehicles is no longer necessarily as simple as pressing a button and driving away.</p>
+<p>The <strong>GTA 6 car theft system</strong> introduces different entry methods depending on the type and security of the vehicle.</p>
+<h3>Older Cars Can Be Opened With a Slim Jim</h3>
+<p>Jason is shown using a <strong>slim jim</strong> to gain access to an older vehicle.</p>
+<p>This provides a relatively discreet method of opening suitable cars without immediately smashing a window and making noise.</p>
+<h3>Newer Cars May Require a Key Cloner</h3>
+<p>More modern vehicles can require additional technology.</p>
+<p>Preview coverage describes a <strong>key cloner</strong> that can be used on newer cars whose electronic security prevents the simpler slim-jim approach.</p>
+<p>That effectively gives different vehicle generations different levels of theft difficulty.</p>
+<h3>Smashing the Window Still Works</h3>
+<p>Players who do not want to spend time bypassing a lock can use the traditional solution: <strong>break the window</strong>.</p>
+<p>The trade-off is obvious.</p>
+<p>Smashing glass creates noise and can trigger the car's alarm, increasing the chance that witnesses or police notice what is happening.</p>
+<h3>Classic Carjacking Is Still Available</h3>
+<p>None of this removes traditional Grand Theft Auto carjacking.</p>
+<p>If a vehicle is already occupied, Jason or Lucia can still forcibly remove the driver and take it.</p>
+<p>The expanded tools mainly apply to stealing <strong>parked and unattended cars</strong>.</p>
+<h2>WAINK Lets You Scan Cars Before Stealing Them</h2>
+<p>One of the phone applications identified in preview coverage is called <strong>WAINK</strong>.</p>
+<p>The app can be used to scan a vehicle and provide useful information before the player decides whether it is worth stealing.</p>
+<p>Reported information includes details such as:</p>
+<ul>
+<li>Vehicle value.</li>
+<li>Security or lock information.</li>
+<li>Tracking technology.</li>
+</ul>
+<p>This is especially useful if vehicle theft is being performed for profit rather than simply transportation.</p>
+<p>Instead of stealing random cars, players can assess whether a target is valuable enough to justify the additional risk.</p>
+<h3>Some Cars Have Trackers</h3>
+<p>Certain vehicles can contain <strong>tracking systems</strong>.</p>
+<p>A tracked car gives law enforcement another way to follow the player and can turn what looked like an easy theft into a more serious pursuit.</p>
+<p>That creates another risk-versus-reward decision: an expensive vehicle may be worth more money, but its security and tracking technology can also make it harder to steal successfully.</p>
+<h2>GTA 6 Combat Has a Max Payne Influence</h2>
+<p>The Extended Look also gives the clearest demonstration yet of GTA VI's redesigned gunplay.</p>
+<p>Its cover shooting still has similarities to GTA V and <em>Red Dead Redemption 2</em>, but one of the most notable additions evokes Rockstar's <em>Max Payne 3</em>.</p>
+<h3>Focus Mode Slows Down Combat</h3>
+<p>A <strong>Focus-style targeting ability</strong> can slow the action and highlight vulnerable areas on enemies.</p>
+<p>During the footage, different body zones appear with <strong>red and yellow targeting indicators</strong>.</p>
+<p>The colors appear to distinguish between potentially lethal and disabling areas.</p>
+<p>Examples include:</p>
+<ul>
+<li>Red highlights around vital regions such as the head or chest.</li>
+<li>Yellow highlights around joints, limbs or other areas that may incapacitate rather than immediately kill.</li>
+</ul>
+<p>The system gives players more control over how they deal with armed opponents.</p>
+<h3>Enemies Can Be Incapacitated</h3>
+<p>GTA VI's location-based damage allows players to shoot specific parts of an enemy's body.</p>
+<p>Targeting an arm or leg can potentially <strong>disable or incapacitate</strong> an opponent rather than simply killing them.</p>
+<p>This opens the door to encounters where lethal force is not always required.</p>
+<h3>Weapons Can Potentially Be Shot From an Enemy's Hands</h3>
+<p>Targeting highlights also appear around hands and weapons, with preview interpretations suggesting that players may be able to <strong>disarm opponents by shooting at the weapon or the hand holding it</strong>.</p>
+<p>The Extended Look clearly establishes more precise body-part targeting, although the exact rules determining when a weapon can be shot away have not been formally documented by Rockstar.</p>
+<h3>Non-Lethal Approaches Are Possible</h3>
+<p>The footage and preview information point toward a more deliberate distinction between lethal and non-lethal combat.</p>
+<p>Players may be able to:</p>
+<ul>
+<li>Shoot limbs to incapacitate.</li>
+<li>Target vital areas for lethal shots.</li>
+<li>Disable certain enemies instead of killing them.</li>
+<li>Use situational melee options.</li>
+</ul>
+<p>This also becomes relevant to the game's Criminal Profile, which evaluates more than simply whether the player committed an illegal act.</p>
+<h3>Jason and Lucia Have Different Combat Leanings</h3>
+<p>Preview material also describes different weapon preferences for the protagonists.</p>
+<p><strong>Jason</strong> is presented as being particularly comfortable with weapons such as pistols and assault rifles, fitting his military background.</p>
+<p><strong>Lucia</strong> is frequently shown using shotguns and close-range firepower, including a sequence where she handles a shotgun one-handed while carrying a bag.</p>
+<p>These should be understood as character and gameplay leanings rather than strict class restrictions. Rockstar has not announced that either protagonist is locked out of particular weapon categories.</p>
+<h2>The GTA 6 Phone Is a Physical Object</h2>
+<p>Phones are no longer presented only as flat interface overlays.</p>
+<p>When Jason or Lucia uses a phone, the character physically holds the device while the <strong>camera moves closer to the screen</strong>, integrating it into the world as a three-dimensional object.</p>
+<p>Messages and interface elements can then appear around the phone while the character remains visible.</p>
+<p>This helps blur the line between normal gameplay and menu interactions.</p>
+<h2>GTA 6 Phone Apps Include Snapmatic, WAINK and Ryde Me</h2>
+<p>Several applications have appeared in Extended Look footage or associated preview coverage.</p>
+<h3>Snapmatic Returns</h3>
+<p>Rockstar's parody photography and social-media platform <strong>Snapmatic</strong> returns.</p>
+<p>Players can still use it for photography and interact with the game's wider social-media ecosystem.</p>
+<p>Because Jason and Lucia are criminals trying to avoid unwanted attention, preview information suggests their ability to publicly upload personal photographs may be more restricted than GTA V's implementation.</p>
+<h3>Livestreaming Includes a Live Chat</h3>
+<p>The game's social-media satire extends to <strong>livestreaming</strong>.</p>
+<p>One memorable sequence involves a character broadcasting events while inside a vehicle, complete with a scrolling live-chat feed appearing alongside the stream.</p>
+<p>The mechanic demonstrates that social media in GTA VI is not limited to prerecorded parody clips. Live events occurring around Jason and Lucia can become content inside the game world.</p>
+<h3>Ryde Me Provides Taxi Transportation</h3>
+<p>The <strong>Ryde Me</strong> app is associated with GTA VI's taxi service.</p>
+<p>Preview coverage indicates that it can be used to arrange rides and facilitate faster travel across Leonida, expanding the familiar taxi transport system through a modern rideshare-style interface.</p>
+<h3>WAINK Helps With Vehicle Theft</h3>
+<p>As described earlier, <strong>WAINK</strong> can inspect potential vehicle targets before theft.</p>
+<p>That connects the phone directly to one of GTA VI's criminal systems rather than leaving it purely as a communications device.</p>
+<h2>Jason and Lucia Can Play Together or Separately</h2>
+<p>GTA VI's dual-protagonist structure is considerably more flexible than simply switching between two separate stories.</p>
+<p>Jason and Lucia can operate:</p>
+<ul>
+<li>Independently.</li>
+<li>Together while exploring.</li>
+<li>As partners during missions.</li>
+<li>In different areas of the same mission.</li>
+<li>In different roles during a pursuit or robbery.</li>
+</ul>
+<p>When they are together, switching can happen quickly.</p>
+<p>When they are geographically separated, transitions are more similar to GTA V's longer character-switching sequences.</p>
+<h3>AI Controls the Character You Are Not Playing</h3>
+<p>When Jason and Lucia are working together, the protagonist you are not directly controlling can be handled by the <strong>AI</strong>.</p>
+<p>That character can continue participating in the situation rather than standing passively in place.</p>
+<p>Examples shown or described include:</p>
+<ul>
+<li>Fighting alongside the player.</li>
+<li>Driving.</li>
+<li>Covering an area.</li>
+<li>Participating in robberies.</li>
+<li>Following the controlled protagonist through a location.</li>
+</ul>
+<p>This allows two-person missions to function naturally without becoming co-op gameplay.</p>
+<p>GTA VI's story mode remains a single-player experience.</p>
+<h3>You Can Contact Your Partner by Phone</h3>
+<p>Jason and Lucia can communicate through calls and text messages.</p>
+<p>Preview reporting also indicates that players can use communication options to coordinate with the other protagonist and, in certain circumstances, bring them into activities.</p>
+<p>Rockstar has not yet published a complete rule set explaining exactly when the partner can be summoned, so this should not be interpreted as a universal &quot;call partner anywhere&quot; feature.</p>
+<h2>Jason and Lucia Have a Relationship System</h2>
+<p>Their partnership is not purely mechanical.</p>
+<p>Rockstar and preview coverage describe a <strong>dynamic relationship</strong> between Jason and Lucia that reacts to player choices.</p>
+<p>Players can spend time together or operate independently, and their relationship develops according to how they interact.</p>
+<p>Small details reinforce the system, including affectionate animations such as <strong>holding hands</strong>.</p>
+<p>The relationship is tied to the story rather than existing as a disconnected romance minigame.</p>
+<p>Rockstar North has emphasized that the studio wanted players to spend enough time with each protagonist to form a stronger connection with both characters, which helped drive the decision to use two leads instead of GTA V's three.</p>
+<h2>Safehouses Function More Like RDR2 Camps</h2>
+<p>GTA VI's home bases borrow some design ideas from <em>Red Dead Redemption 2</em>.</p>
+<p>Rather than being empty locations used primarily for saving, <strong>safehouses function as places for character management and everyday activities</strong>.</p>
+<p>Players can use them for clothing, grooming and other appearance-related systems.</p>
+<p>The structure recalls RDR2's camps, where character upkeep and equipment management were integrated into the world rather than hidden entirely inside menus.</p>
+<h2>Gym Workouts Change Your Physique</h2>
+<p>Physical customization also returns.</p>
+<p>Using the <strong>gym can build muscle</strong>, bringing back one of the most recognizable character-development concepts from <em>Grand Theft Auto: San Andreas</em>.</p>
+<p>Jason and Lucia's bodies can visibly change depending on lifestyle.</p>
+<p>Eating too much can contribute to <strong>weight gain</strong>, while exercise can increase muscle definition.</p>
+<p>Some reports also associate smoking with changes to body weight, but available reliable coverage clearly confirms dietary effects more strongly than a direct smoking-to-weight mechanic. Smoking itself appears as an interaction, while the specific claim that smoking causes weight gain remains insufficiently verified.</p>
+<h3>Salons Let You Change Hairstyles</h3>
+<p>Hair salons provide more conventional cosmetic customization.</p>
+<p>Players can change hairstyles and other elements of Jason and Lucia's appearances at dedicated locations.</p>
+<h3>Clothing Stays at Your Safehouse</h3>
+<p>Wardrobe management is tied to safehouses, giving players a persistent location for clothing and outfit changes.</p>
+<p>Certain accessories can also be swapped more quickly during gameplay.</p>
+<h3>Weapons Can Be Stored in Vehicle Trunks</h3>
+<p>GTA VI also limits how much weaponry characters carry directly.</p>
+<p>Additional guns and gear can be kept in <strong>vehicle trunks</strong> or storage locations.</p>
+<p>This is another concept reminiscent of Red Dead Redemption 2, where the player did not automatically carry an entire arsenal at all times.</p>
+<h2>GTA 6 Introduces a Criminal Profile System</h2>
+<p>One of the most important systems revealed through post-showcase previews is the <strong>Criminal Profile</strong>.</p>
+<p>It has been compared with Red Dead Redemption 2's Honor system, but Rockstar's version is more specifically concerned with <strong>what kind of criminal the player becomes</strong>.</p>
+<p>It is not simply a morality meter measuring whether Jason and Lucia are &quot;good&quot; or &quot;evil.&quot;</p>
+<h3>Criminal Profile Tracks How You Behave</h3>
+<p>Your actions can influence the profile according to the way you handle situations.</p>
+<p>A disciplined criminal who completes a robbery cleanly may be viewed differently from someone who creates unnecessary chaos.</p>
+<p>Examples described in preview reporting include distinctions between:</p>
+<ul>
+<li>Professional criminal behavior.</li>
+<li>Unnecessary aggression.</li>
+<li>Violence against people who no longer pose a threat.</li>
+<li>Self-defense.</li>
+<li>Positive interactions with the world.</li>
+</ul>
+<p>The system therefore evaluates context rather than simply assigning a negative value every time the player commits a crime.</p>
+<h3>NPC Reactions Can Change</h3>
+<p>Rockstar North co-studio head Rob Nelson has explained that the world responds to the way players behave.</p>
+<p>NPCs may treat Jason and Lucia differently depending on their actions and reputation, while behavior can also influence aspects of the narrative experience.</p>
+<p>Rockstar has stressed that the system is not designed to prescribe one &quot;correct&quot; playstyle.</p>
+<p>A low Criminal Profile does not necessarily mean someone is playing GTA VI incorrectly. It reflects the type of criminal behavior the player has chosen.</p>
+<h3>Required Story-Mission Violence Is Treated Differently</h3>
+<p>The original claim that &quot;crimes committed during story missions don't count&quot; needs a small qualification.</p>
+<p>Nelson has explained that <strong>actions a mission requires the player to perform are effectively treated as fair game</strong>.</p>
+<p>In other words, the Criminal Profile is not intended to punish the player for violence or illegal acts that the story itself forces them to commit.</p>
+<p>That does not necessarily mean every optional action performed during every mission is ignored.</p>
+<p>The more accurate rule is that <strong>required mission behavior should not count against the player simply because the story demanded it</strong>.</p>
+<h2>Even Petting Dogs Can Feed Into the Behavior System</h2>
+<p>GTA VI includes contextual animal interactions.</p>
+<p>Players can <strong>pet or scold dogs</strong>, and the Extended Look includes an interface prompt associated with interacting positively with an animal.</p>
+<p>Some coverage has described dog petting as producing &quot;good karma.&quot; That description is useful shorthand, but Rockstar explicitly distinguishes the Criminal Profile from a simple RDR2-style morality or karma bar.</p>
+<p>The safer conclusion is that interactions with animals are among the types of behavior the game can recognize.</p>
+<p>And yes, <strong>you can pet the dogs</strong>.</p>
+<h2>GTA 6 Has a Huge Range of Side Activities</h2>
+<p>The Extended Look substantially expanded the known list of activities available across Leonida.</p>
+<p>Confirmed or directly demonstrated activities include:</p>
+<ul>
+<li>Parachuting and skydiving.</li>
+<li>Base jumping from tall buildings.</li>
+<li>Scuba diving.</li>
+<li>Kayaking.</li>
+<li>Mini golf.</li>
+<li>Gym workouts.</li>
+<li>Basketball.</li>
+<li>Pool.</li>
+<li>Street racing.</li>
+<li>Dirt-bike racing.</li>
+<li>Swimming.</li>
+<li>Jet skiing.</li>
+<li>Boating.</li>
+<li>Zoo visits and animal observation.</li>
+<li>Petting or scolding dogs.</li>
+</ul>
+<p>Rockstar has also previously established activities such as fishing, hunting and off-roading through official location descriptions and promotional material.</p>
+<p>For the broader catalog, see our <a href="/GTAIndex-Demo/guides/gta-6-activities-everything-you-can-do">GTA 6 activities guide</a>.</p>
+<h2>Racing Includes Cars, Dirt Bikes and Performance Upgrades</h2>
+<p>Vehicle competition is not restricted to one style of racing.</p>
+<p>The showcase includes or supports multiple types of motorsport, including:</p>
+<ul>
+<li>Street racing.</li>
+<li>Circuit-style car events.</li>
+<li>Dirt-bike races.</li>
+<li>Off-road driving.</li>
+</ul>
+<p><strong>NOS or nitrous-style performance boosts</strong> also appear in racing-related coverage, further expanding the tuning and racing side of GTA VI's vehicle systems.</p>
+<p>The exact availability and upgrade rules for nitrous have not yet been comprehensively documented by Rockstar.</p>
+<h2>Vice City Is Divided Into Distinct Districts</h2>
+<p>Vice City is presented less like one uniform urban space and more like a collection of <strong>distinct neighborhoods and districts</strong>.</p>
+<p>Different areas have their own architecture, population, atmosphere and identity.</p>
+<p>That follows Rockstar's broader approach to Leonida, which includes environments far beyond Vice City itself.</p>
+<p>The game's official world already includes locations and regions such as:</p>
+<ul>
+<li>Vice City.</li>
+<li>Leonida Keys.</li>
+<li>Grassrivers.</li>
+<li>Port Gellhorn.</li>
+<li>Ambrosia.</li>
+<li>Mount Kalaga National Park.</li>
+</ul>
+<p>The Extended Look reinforces the sense that individual parts of Vice City itself will also feel meaningfully different from one another.</p>
+<h2>The Minimap Shows Buildings in 3D</h2>
+<p>Rockstar has also overhauled map presentation.</p>
+<p>The in-game <strong>minimap can render building shapes with three-dimensional depth</strong>, making dense urban environments easier to read.</p>
+<p>This should provide more useful spatial information than a purely flat road layout, particularly in areas with multi-level structures.</p>
+<h2>The Pause Map Uses Satellite-Style Imagery</h2>
+<p>The larger map interface has changed as well.</p>
+<p>Instead of relying entirely on the simplified street-and-block presentation familiar from earlier GTA titles, GTA VI uses <strong>satellite-style imagery</strong> to depict Leonida.</p>
+<p>This gives the world map a more geographically realistic appearance and makes terrain, coastlines, vegetation and urban density easier to distinguish visually.</p>
+<h2>The Extended Look Was Captured on PlayStation 5</h2>
+<p>Rockstar explicitly states that the Extended Look was <strong>captured entirely from in-game footage on PlayStation 5</strong>.</p>
+<p>Separate preview reporting indicates that the demonstration was running on a <strong>standard or base PS5</strong>, rather than requiring a PS5 Pro.</p>
+<p>That is notable given the density of Vice City's traffic, crowds, lighting, interiors and environmental effects.</p>
+<h2>The Footage Runs at 30fps</h2>
+<p>The published Extended Look is presented at <strong>30 frames per second</strong>.</p>
+<p>Rockstar North's Rob Nelson also reportedly told preview attendees that current console builds were running at 30fps.</p>
+<p>However, Rockstar has not published a formal technical specification page guaranteeing that 30fps will be the only launch mode on every console.</p>
+<p>No 60fps performance mode has been officially announced.</p>
+<p>The most precise current position is:</p>
+<ul>
+<li>The Extended Look itself is 30fps.</li>
+<li>Preview attendees report the base-PS5 build running at 30fps.</li>
+<li>Rockstar development leadership has reportedly described current console builds as 30fps.</li>
+<li>Whether an alternative 40fps or 60fps mode will eventually exist remains unconfirmed.</li>
+</ul>
+<h2>Cutscenes Transition Seamlessly Into Gameplay</h2>
+<p>One of the showcase's most impressive presentation tricks is how frequently scenes shift from cinematic framing to direct player control without an obvious loading screen or hard cut.</p>
+<p>These <strong>seamless cutscene-to-gameplay transitions</strong> make it less obvious where scripted storytelling ends and interactive gameplay begins.</p>
+<p>Rockstar has used versions of this technique before, but the Extended Look suggests it is being pushed considerably further in GTA VI.</p>
+<h2>The Radio Returns</h2>
+<p>The traditional GTA radio system remains part of the experience.</p>
+<p>Players can listen to music while driving, maintaining one of the series' most recognizable features.</p>
+<p>The Extended Look also demonstrates how deeply music, television, advertising and social media are integrated into Leonida's broader satire.</p>
+<h2>The Biggest GTA 6 Mechanics Confirmed After the Extended Look</h2>
+<p>Taken together, the Extended Look itself and the wave of sanctioned preview reporting around it establish a much more systemic GTA than the initial footage alone suggested.</p>
+<p>The most important additions include:</p>
+<ul>
+<li>A <strong>six-star wanted system</strong>.</li>
+<li>Witnesses who can report crimes.</li>
+<li>Police tracking faces, clothing, vehicles and whether the protagonists are together.</li>
+<li>Splitting Jason and Lucia up as an escape tactic.</li>
+<li>Destroying or abandoning identifiable getaway vehicles.</li>
+<li>Slim jims for stealing older cars.</li>
+<li>Key cloning for newer vehicles.</li>
+<li>Window smashing and vehicle alarms.</li>
+<li>Vehicle tracking technology.</li>
+<li>The WAINK vehicle-scanning app.</li>
+<li>Traditional occupied-car carjacking.</li>
+<li>Slow-motion Focus combat.</li>
+<li>Body-part targeting.</li>
+<li>Lethal and disabling hit zones.</li>
+<li>More opportunities for non-lethal combat.</li>
+<li>A fully rendered 3D phone.</li>
+<li>Snapmatic.</li>
+<li>Livestreaming and live chat.</li>
+<li>Ryde Me taxi transportation.</li>
+<li>Character switching during activities and missions.</li>
+<li>AI control of Jason or Lucia when the player controls the other.</li>
+<li>Calls and texts between the protagonists.</li>
+<li>A dynamic Jason and Lucia relationship.</li>
+<li>Safehouse-based appearance and equipment management.</li>
+<li>Gym-driven muscle development.</li>
+<li>Diet-related weight changes.</li>
+<li>Hair salons and wardrobe customization.</li>
+<li>Weapon storage in vehicle trunks.</li>
+<li>The new Criminal Profile behavior system.</li>
+<li>Context-sensitive NPC reactions.</li>
+<li>Mission-required crimes being treated differently by the profile.</li>
+<li>Dog interactions.</li>
+<li>Parachuting.</li>
+<li>Scuba diving.</li>
+<li>Kayaking.</li>
+<li>Mini golf.</li>
+<li>Street and dirt-bike racing.</li>
+<li>Gym activities.</li>
+<li>3D minimap buildings.</li>
+<li>Satellite-style world mapping.</li>
+<li>Seamless cinematics and gameplay.</li>
+<li>The return of in-car radio.</li>
+</ul>
+<p>Rockstar may still adjust individual systems before release, but these details provide the clearest picture yet of how much GTA VI is expanding the series' underlying simulation.</p>
+<h2>Conclusion</h2>
+<p>The <strong>GTA 6 Extended Look details</strong> reveal a game built around interconnected systems rather than isolated new features. Stealing a car can involve scanning its value, bypassing security and worrying about a tracker. Committing a crime can create witnesses, descriptions and long-term police awareness. Combat can involve targeting specific limbs, while Jason and Lucia's relationship, appearance and criminal behavior can evolve according to how they are played.</p>
+<p>The new <strong>Criminal Profile</strong>, six-star wanted system, physical phone, expanded vehicle theft and flexible dual-protagonist mechanics are particularly significant because they influence several parts of the game at once.</p>
+<p>Rockstar's August 27 showcase was therefore more than a visual demonstration of Vice City. Combined with the developer interviews and sanctioned previews that followed, it exposed a much deeper layer of GTA VI's design — and finer details will continue to become clearer as Rockstar approaches the game's November 19, 2026 release.</p>
+<p>Sources:</p>
+<ul>
+<li><a href="https://www.rockstargames.com/VI/an-extended-look">Rockstar Games — Grand Theft Auto VI: An Extended Look</a></li>
+<li><a href="https://www.rockstargames.com/videos/rk721912">Rockstar Games — Grand Theft Auto VI Extended Look Video</a></li>
+<li><a href="https://www.rockstargames.com/VI">Rockstar Games — Grand Theft Auto VI</a></li>
+<li><a href="https://www.gamesradar.com/games/grand-theft-auto/gta-6-wanted-system-goes-up-to-6-stars-and-lets-police-track-your-face-your-clothes-and-your-car/">GamesRadar+ — GTA 6 Wanted System</a></li>
+<li><a href="https://www.gamesradar.com/gta-6-biggest-gameplay-changes-and-new-mechanics/">GamesRadar+ — GTA 6 Biggest Gameplay Changes</a></li>
+<li><a href="https://www.gamesradar.com/games/grand-theft-auto/gta-6-weapons/">GamesRadar+ — GTA 6 Weapons</a></li>
+<li><a href="https://www.techradar.com/gaming/ps5/16-new-gta-6-details-we-learned-from-the-big-extended-look-gameplay-video-captured-in-game-on-a-ps5">TechRadar — 16 New GTA 6 Extended Look Details</a></li>
+<li><a href="https://www.techradar.com/gaming/analysts-say-getting-gta-6-to-run-at-60fps-is-extremely-unlikely-on-console-hardware-as-rockstar-confirms-30fps-limit">TechRadar — GTA 6 Console Frame Rate Reporting</a></li>
+<li><a href="https://www.theverge.com/games/983941/grand-theft-auto-vi-gta-netflix-extended-look">The Verge — GTA VI Extended Look</a></li>
+<li><a href="https://www.wired.com/story/5-takeaways-from-the-gta-vi-extended-look">WIRED — GTA VI Extended Look Takeaways</a></li>
+<li><a href="https://www.pcgamer.com/games/grand-theft-auto/gta-6-is-adding-a-more-nuanced-version-of-red-dead-redemption-2s-honor-system-to-ensure-player-characters-arent-too-all-powerful/">PC Gamer — GTA 6 Criminal Profile System</a></li>
+<li><a href="https://www.pcgamer.com/games/grand-theft-auto/big-new-gta-6-gameplay-details-revealed-including-specifics-about-jason-and-lucia-character-swapping-play-as-a-couple-or-go-off-and-cause-chaos-independently/">PC Gamer — Jason and Lucia Character Switching</a></li>
+<li><a href="https://beebom.com/gta-6-netflix-extended-look-everything-new-revealed/">Beebom — GTA 6 Extended Look Breakdown</a></li>
+<li><a href="https://beebom.com/gta-6-criminal-profile-system-version-of-red-dead-redemption-2-honor-system/">Beebom — GTA 6 Criminal Profile</a></li>
+</ul>
+</div>
+
+              <p class="source">Source:
+          <a href="https://www.rockstargames.com/fr/videos/rk721912?resolution=2160p" rel="nofollow noopener" target="_blank">The GTA VI Extended Look and follow-up breakdowns (Vice, TechRadar, Beebom and others).</a>        </p>
+            <p class="muted" style="font-size:13px">Last verified 30 Aug 2026.</p>    </div>
+
+      </section>
+</article>
+
+<style>
+  .read-progress{position:fixed;top:var(--header-h);left:0;height:3px;width:0;z-index:1200;
+    background:linear-gradient(90deg,var(--sunset-pink),var(--sun-gold));box-shadow:0 0 10px rgba(240,90,157,.5)}
+  .article-wrap{max-width:740px}
+  .article-body{font-size:clamp(1.02rem,1.15vw,1.14rem);line-height:1.75}
+  .article-body > p:first-of-type::first-letter{font-family:'Bebas Neue',Impact,sans-serif;
+    float:left;font-size:3.4em;line-height:.8;padding:6px 12px 0 0;color:var(--sun-gold)}
+  .article-body h2{font-size:clamp(1.4rem,2.4vw,1.9rem);margin:1.8em 0 .5em;letter-spacing:.005em}
+  .article-body h3{font-size:clamp(1.15rem,1.8vw,1.4rem);margin:1.5em 0 .4em}
+  .article-body blockquote{margin:1.4em 0;padding:2px 0 2px 20px;border-left:3px solid var(--sunset-pink);
+    font-size:1.08em;font-style:italic;color:var(--paper)}
+  .article-body img{border-radius:12px;margin:1.4em 0}
+  .article-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.4em 0;
+    font-size:.92em;line-height:1.5;-webkit-overflow-scrolling:touch}
+  .article-body th,.article-body td{padding:10px 14px;text-align:left;vertical-align:top;
+    border-bottom:1px solid rgba(255,255,255,.12)}
+  .article-body th{font-weight:800;color:var(--sun-gold);white-space:nowrap;border-bottom-color:rgba(255,255,255,.28)}
+  .article-body tbody tr:nth-child(odd){background:rgba(255,255,255,.035)}
+</style>
+
+
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script>
+    (function () {
+      var bar = document.getElementById('readProgress'), art = document.getElementById('article');
+      if (!bar || !art) return;
+      function upd() {
+        var r = art.getBoundingClientRect(), vh = window.innerHeight;
+        var scrolled = Math.min(Math.max(-r.top, 0), Math.max(r.height - vh, 1));
+        bar.style.width = (scrolled / Math.max(r.height - vh, 1) * 100).toFixed(1) + '%';
+      }
+      upd();
+      window.addEventListener('scroll', upd, { passive: true });
+      window.addEventListener('resize', upd, { passive: true });
+    })();
+  </script>
+</body>
+</html>

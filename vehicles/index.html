@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 Vehicles — Cars, Bikes &amp; Boats — GTAIndex · Fan Project demo</title>
+<meta name="description" content="Cars, boats, and aircraft of Grand Theft Auto VI — added as they’re confirmed.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+    <section class="section list-page">
+    <div class="wrap">
+      <div class="list-head">
+        <span class="eyebrow">Database</span>
+        <h1 class="display list-title">Vehicles of Leonida <span class="list-count" id="listCount">160</span></h1>
+        <p class="list-blurb">Cars, boats, and aircraft of Grand Theft Auto VI — added as they’re confirmed.</p>
+      </div>
+
+              
+        <div class="list-toolbar">
+          <div class="list-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M16.5 16.5 21 21"></path></svg>
+            <input type="search" id="listSearch" placeholder="Filter vehicles of leonida…" aria-label="Filter vehicles of leonida">
+          </div>
+                      <div class="list-chips">
+              <button type="button" class="list-chip is-on" data-kind="">All</button>
+                              <button type="button" class="list-chip" data-kind="Bicycle">Bicycle</button>
+                              <button type="button" class="list-chip" data-kind="Boat">Boat</button>
+                              <button type="button" class="list-chip" data-kind="Commercial">Commercial</button>
+                              <button type="button" class="list-chip" data-kind="Compact Car">Compact Car</button>
+                              <button type="button" class="list-chip" data-kind="Coupes">Coupes</button>
+                              <button type="button" class="list-chip" data-kind="Emergency">Emergency</button>
+                              <button type="button" class="list-chip" data-kind="Helicopter">Helicopter</button>
+                              <button type="button" class="list-chip" data-kind="Helicopters">Helicopters</button>
+                              <button type="button" class="list-chip" data-kind="Industrial">Industrial</button>
+                              <button type="button" class="list-chip" data-kind="Light Truck">Light Truck</button>
+                              <button type="button" class="list-chip" data-kind="Military">Military</button>
+                              <button type="button" class="list-chip" data-kind="Mobility Device">Mobility Device</button>
+                              <button type="button" class="list-chip" data-kind="Motorboat">Motorboat</button>
+                              <button type="button" class="list-chip" data-kind="Motorcycle">Motorcycle</button>
+                              <button type="button" class="list-chip" data-kind="Motorcycles">Motorcycles</button>
+                              <button type="button" class="list-chip" data-kind="Muscle">Muscle</button>
+                              <button type="button" class="list-chip" data-kind="Off-Road">Off-Road</button>
+                              <button type="button" class="list-chip" data-kind="Pickup">Pickup</button>
+                              <button type="button" class="list-chip" data-kind="Plane">Plane</button>
+                              <button type="button" class="list-chip" data-kind="SUV">SUV</button>
+                              <button type="button" class="list-chip" data-kind="Sedan">Sedan</button>
+                              <button type="button" class="list-chip" data-kind="Service">Service</button>
+                              <button type="button" class="list-chip" data-kind="Ship">Ship</button>
+                              <button type="button" class="list-chip" data-kind="Sports">Sports</button>
+                              <button type="button" class="list-chip" data-kind="Sports Classics">Sports Classics</button>
+                              <button type="button" class="list-chip" data-kind="Super">Super</button>
+                              <button type="button" class="list-chip" data-kind="Train">Train</button>
+                              <button type="button" class="list-chip" data-kind="Utility">Utility</button>
+                              <button type="button" class="list-chip" data-kind="Van">Van</button>
+                              <button type="button" class="list-chip" data-kind="Vans">Vans</button>
+                              <button type="button" class="list-chip" data-kind="Watercraft">Watercraft</button>
+                          </div>
+                    <label class="list-sort"><span>Sort</span>
+            <select id="listSort">
+              <option value="featured">Featured</option>
+              <option value="az">A–Z</option>
+              <option value="za">Z–A</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="recordcards list-grid" id="listGrid">
+                                  <a href="/GTAIndex-Demo/vehicles/crest-kayak" class="recordcard rec-rev" data-name="crest kayak" data-kind="Watercraft">
+              <div class="recordcard__img"><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/uploads/01m1e8ws1sa4bf51p15ptrgwf0/img-640.avif 640w, /GTAIndex-Demo/media/uploads/01m1e8ws1sa4bf51p15ptrgwf0/img-1280.avif 1280w" sizes="(max-width:700px) 100vw, 33vw">
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m1e8ws1sa4bf51p15ptrgwf0/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m1e8ws1sa4bf51p15ptrgwf0/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m1e8ws1sa4bf51p15ptrgwf0/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m1e8ws1sa4bf51p15ptrgwf0/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m1e8ws1sa4bf51p15ptrgwf0/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Crest Kayak"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Watercraft</span>                <span class="recordcard__name">Crest Kayak</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/dinka-enduro" class="recordcard rec-rev" data-name="dinka enduro motorcycle" data-kind="Motorcycle">
+              <div class="recordcard__img"><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/uploads/01m1e8x6899r5gvcz0skaqnhwb/img-640.avif 640w, /GTAIndex-Demo/media/uploads/01m1e8x6899r5gvcz0skaqnhwb/img-1280.avif 1280w" sizes="(max-width:700px) 100vw, 33vw">
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m1e8x6899r5gvcz0skaqnhwb/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m1e8x6899r5gvcz0skaqnhwb/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m1e8x6899r5gvcz0skaqnhwb/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m1e8x6899r5gvcz0skaqnhwb/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m1e8x6899r5gvcz0skaqnhwb/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Dinka Enduro Motorcycle"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Dinka Enduro Motorcycle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/shitzu-squalo" class="recordcard rec-rev" data-name="shitzu squalo" data-kind="Watercraft">
+              <div class="recordcard__img"><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/edition-2026/squalo-04-640.avif 640w, /GTAIndex-Demo/media/edition-2026/squalo-04-1280.avif 1280w" sizes="(max-width:700px) 100vw, 33vw">
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/edition-2026/squalo-04-640.webp 640w, /GTAIndex-Demo/media/edition-2026/squalo-04-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/edition-2026/squalo-04-1280.jpg"
+       srcset="/GTAIndex-Demo/media/edition-2026/squalo-04-640.jpg 640w, /GTAIndex-Demo/media/edition-2026/squalo-04-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Shitzu Squalo watercraft in GTA VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Watercraft</span>                <span class="recordcard__name">Shitzu Squalo</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/vapid-ganado-retro" class="recordcard rec-rev" data-name="vapid ganado — retro build" data-kind="Off-Road">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/vehicles/vapid-ganado-retro/ultimate_edition_vapid_ganado_retro_build_01-640.webp 640w, /GTAIndex-Demo/media/vehicles/vapid-ganado-retro/ultimate_edition_vapid_ganado_retro_build_01-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/vehicles/vapid-ganado-retro/ultimate_edition_vapid_ganado_retro_build_01-1280.jpg"
+       srcset="/GTAIndex-Demo/media/vehicles/vapid-ganado-retro/ultimate_edition_vapid_ganado_retro_build_01-640.jpg 640w, /GTAIndex-Demo/media/vehicles/vapid-ganado-retro/ultimate_edition_vapid_ganado_retro_build_01-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Vapid Ganado Retro — GTA VI Ultimate Edition, view 1"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Off-Road</span>                <span class="recordcard__name">Vapid Ganado — Retro Build</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/vapid-buggy" class="recordcard rec-rev" data-name="’67 vapid dominator buggy" data-kind="Off-Road">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/vehicles/vapid-buggy/ultimate_edition_vapid_buggy_01-640.webp 640w, /GTAIndex-Demo/media/vehicles/vapid-buggy/ultimate_edition_vapid_buggy_01-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/vehicles/vapid-buggy/ultimate_edition_vapid_buggy_01-1280.jpg"
+       srcset="/GTAIndex-Demo/media/vehicles/vapid-buggy/ultimate_edition_vapid_buggy_01-640.jpg 640w, /GTAIndex-Demo/media/vehicles/vapid-buggy/ultimate_edition_vapid_buggy_01-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Vapid Buggy — GTA VI Ultimate Edition, view 1"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Off-Road</span>                <span class="recordcard__name">’67 Vapid Dominator Buggy</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/grotti-cheetah" class="recordcard rec-rev" data-name="’95 grotti cheetah" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/vehicles/grotti-cheetah/ultimate_edition_grotti_cheetah_01-640.webp 640w, /GTAIndex-Demo/media/vehicles/grotti-cheetah/ultimate_edition_grotti_cheetah_01-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/vehicles/grotti-cheetah/ultimate_edition_grotti_cheetah_01-1280.jpg"
+       srcset="/GTAIndex-Demo/media/vehicles/grotti-cheetah/ultimate_edition_grotti_cheetah_01-640.jpg 640w, /GTAIndex-Demo/media/vehicles/grotti-cheetah/ultimate_edition_grotti_cheetah_01-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Grotti Cheetah — GTA VI Ultimate Edition, view 1"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">’95 Grotti Cheetah</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/vapid-stanier" class="recordcard rec-rev" data-name="’55 vapid stanier" data-kind="Sedan">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/vehicles/vapid-stanier/vintage_vice_city_pack_vapid_stanier_01-640.webp 640w, /GTAIndex-Demo/media/vehicles/vapid-stanier/vintage_vice_city_pack_vapid_stanier_01-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/vehicles/vapid-stanier/vintage_vice_city_pack_vapid_stanier_01-1280.jpg"
+       srcset="/GTAIndex-Demo/media/vehicles/vapid-stanier/vintage_vice_city_pack_vapid_stanier_01-640.jpg 640w, /GTAIndex-Demo/media/vehicles/vapid-stanier/vintage_vice_city_pack_vapid_stanier_01-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Vapid Stanier — GTA VI Ultimate Edition, view 1"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sedan</span>                <span class="recordcard__name">’55 Vapid Stanier</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-albany-alpha" class="recordcard rec-rev" data-name="albany alpha" data-kind="Sports">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Albany Alpha</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-albany-emperor" class="recordcard rec-rev" data-name="albany emperor" data-kind="Sedan">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-albany-emperor.jpg" alt="Albany Emperor" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sedan</span>                <span class="recordcard__name">Albany Emperor</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bravado-banshee" class="recordcard rec-rev" data-name="bravado banshee" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Banshee"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Bravado Banshee</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-grotti-furia" class="recordcard rec-rev" data-name="grotti furia" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Furia"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Grotti Furia</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bravado-bison" class="recordcard rec-rev" data-name="bravado bison" data-kind="Pickup">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bison"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Pickup</span>                <span class="recordcard__name">Bravado Bison</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-western-nightblade" class="recordcard rec-rev" data-name="western nightblade" data-kind="Motorcycle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-western-nightblade.jpg" alt="Western Nightblade" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Western Nightblade</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-maibatsu-sanchez" class="recordcard rec-rev" data-name="maibatsu sanchez" data-kind="Motorcycle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-maibatsu-sanchez.jpg" alt="Maibatsu Sanchez" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Maibatsu Sanchez</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-airboat-fanboat" class="recordcard rec-rev" data-name="airboat / fanboat" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Airboat"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Airboat / Fanboat</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-speedophile-seashark" class="recordcard rec-rev" data-name="speedophile seashark" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="New Seashark"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Speedophile Seashark</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-pegassi-speeder" class="recordcard rec-rev" data-name="pegassi speeder" data-kind="Boat">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-pegassi-speeder.jpg" alt="Pegassi Speeder" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Pegassi Speeder</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-shitzu-squalo" class="recordcard rec-rev" data-name="shitzu squalo" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/edition-2026/squalo-04-640.avif 640w, /GTAIndex-Demo/media/edition-2026/squalo-04-1280.avif 1280w" sizes="(max-width:700px) 100vw, 33vw">
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/edition-2026/squalo-04-640.webp 640w, /GTAIndex-Demo/media/edition-2026/squalo-04-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/edition-2026/squalo-04-1280.jpg"
+       srcset="/GTAIndex-Demo/media/edition-2026/squalo-04-640.jpg 640w, /GTAIndex-Demo/media/edition-2026/squalo-04-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Shitzu Squalo watercraft in GTA VI"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Shitzu Squalo</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-shitzu-tropic" class="recordcard rec-rev" data-name="shitzu tropic" data-kind="Boat">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Shitzu Tropic</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-police-boat" class="recordcard rec-rev" data-name="police boat" data-kind="Boat">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Police Boat</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-36-classic-roadster" class="recordcard rec-rev" data-name="#36 classic roadster" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/number-36-racer-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/number-36-racer-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/number-36-racer-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/number-36-racer-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/number-36-racer-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="#36 classic roadster"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">#36 classic roadster</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-8f-drafter" class="recordcard rec-rev" data-name="8f drafter" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/8f-drafter-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/8f-drafter-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/8f-drafter-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/8f-drafter-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/8f-drafter-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="8F Drafter"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">8F Drafter</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-airboat" class="recordcard rec-rev" data-name="airboat" data-kind="Motorboat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Airboat"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorboat</span>                <span class="recordcard__name">Airboat</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-airboat-09" class="recordcard rec-rev" data-name="airboat 09" data-kind="Motorboat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-09-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-09-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-09-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-09-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/airboat-09-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Airboat 09"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorboat</span>                <span class="recordcard__name">Airboat 09</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-albany-two-door-rideout-customs" class="recordcard rec-rev" data-name="albany two-door (rideout customs)" data-kind="Sedan">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sedan</span>                <span class="recordcard__name">Albany two-door (Rideout Customs)</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-aleutian" class="recordcard rec-rev" data-name="aleutian" data-kind="Light Truck">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-aleutian.jpg" alt="Aleutian" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Aleutian</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-alvino-v1" class="recordcard rec-rev" data-name="alvino v1" data-kind="Motorcycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/alvino-v1-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/alvino-v1-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/alvino-v1-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/alvino-v1-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/alvino-v1-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Alvino V1"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Alvino V1</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-asterope-gz" class="recordcard rec-rev" data-name="asterope gz" data-kind="Sedan">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-asterope-gz.jpg" alt="Asterope GZ" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sedan</span>                <span class="recordcard__name">Asterope GZ</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-astron" class="recordcard rec-rev" data-name="astron" data-kind="Light Truck">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/astron-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/astron-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/astron-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/astron-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/astron-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Astron"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Astron</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-avarus" class="recordcard rec-rev" data-name="avarus" data-kind="Motorcycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/avarus-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/avarus-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/avarus-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/avarus-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/avarus-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Avarus"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Avarus</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-azimut-85" class="recordcard rec-rev" data-name="azimut 85" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-85-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-85-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-85-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-85-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-85-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Azimut 85"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Azimut 85</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-azimut-atlantis-45" class="recordcard rec-rev" data-name="azimut atlantis 45" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-atlantis-45-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-atlantis-45-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-atlantis-45-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-atlantis-45-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/azimut-atlantis-45-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Azimut Atlantis 45"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Azimut Atlantis 45</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-baller-second-generation" class="recordcard rec-rev" data-name="baller (second generation)" data-kind="SUV">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/baller-second-generation-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/baller-second-generation-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/baller-second-generation-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/baller-second-generation-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/baller-second-generation-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Baller (second generation)"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Baller (second generation)</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-banshee" class="recordcard rec-rev" data-name="banshee" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/banshee-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Banshee"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Banshee</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-barge" class="recordcard rec-rev" data-name="barge" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/barge-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/barge-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/barge-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/barge-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/barge-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Barge"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Barge</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bison" class="recordcard rec-rev" data-name="bison" data-kind="Light Truck">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bison"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Bison</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bison-second-generation" class="recordcard rec-rev" data-name="bison (second generation)" data-kind="Light Truck">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-second-generation-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-second-generation-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-second-generation-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-second-generation-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bison-second-generation-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bison (second generation)"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Bison (second generation)</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-blazer" class="recordcard rec-rev" data-name="blazer" data-kind="Off-Road">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Blazer"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Off-Road</span>                <span class="recordcard__name">Blazer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-blazer-lifeguard" class="recordcard rec-rev" data-name="blazer lifeguard" data-kind="Off-Road">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-lifeguard-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-lifeguard-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-lifeguard-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-lifeguard-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/blazer-lifeguard-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Blazer Lifeguard"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Off-Road</span>                <span class="recordcard__name">Blazer Lifeguard</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-blista-compact" class="recordcard rec-rev" data-name="blista compact" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/blista-compact-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/blista-compact-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/blista-compact-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/blista-compact-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/blista-compact-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Blista Compact"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Blista Compact</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bmx" class="recordcard rec-rev" data-name="bmx" data-kind="Bicycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bmx-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bmx-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bmx-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bmx-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bmx-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="BMX"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Bicycle</span>                <span class="recordcard__name">BMX</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bobcat-xl" class="recordcard rec-rev" data-name="bobcat xl" data-kind="Van">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bobcat XL"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Van</span>                <span class="recordcard__name">Bobcat XL</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bow-rider" class="recordcard rec-rev" data-name="bow rider" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bow-rider-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bow-rider-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bow-rider-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bow-rider-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/bow-rider-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bow Rider"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Bow Rider</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-boxville" class="recordcard rec-rev" data-name="boxville" data-kind="Van">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/boxville-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/boxville-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/boxville-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/boxville-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/boxville-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Boxville"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Van</span>                <span class="recordcard__name">Boxville</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-btn-delmar" class="recordcard rec-rev" data-name="btn delmar" data-kind="Ship">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/btn-delmar-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/btn-delmar-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/btn-delmar-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/btn-delmar-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/btn-delmar-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="BTN Delmar"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Ship</span>                <span class="recordcard__name">BTN Delmar</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buccaneer" class="recordcard rec-rev" data-name="buccaneer" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-buccaneer.jpg" alt="Buccaneer" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Buccaneer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buccaneer-custom" class="recordcard rec-rev" data-name="buccaneer custom" data-kind="Muscle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buccaneer-custom-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buccaneer-custom-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buccaneer-custom-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buccaneer-custom-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buccaneer-custom-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Buccaneer Custom"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Buccaneer Custom</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buffalo" class="recordcard rec-rev" data-name="buffalo" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-buffalo.jpg" alt="Buffalo" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Buffalo</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buffalo-stx" class="recordcard rec-rev" data-name="buffalo stx" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-buffalo-stx.jpg" alt="Buffalo STX" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Buffalo STX</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buffalo-stx-pursuit" class="recordcard rec-rev" data-name="buffalo stx pursuit" data-kind="Emergency">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buffalo-stx-pursuit-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buffalo-stx-pursuit-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buffalo-stx-pursuit-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buffalo-stx-pursuit-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/buffalo-stx-pursuit-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Buffalo STX Pursuit"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Emergency</span>                <span class="recordcard__name">Buffalo STX Pursuit</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-burrito" class="recordcard rec-rev" data-name="burrito" data-kind="Vans">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/burrito-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/burrito-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/burrito-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/burrito-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/burrito-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Burrito"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Vans</span>                <span class="recordcard__name">Burrito</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buzzard-attack-chopper" class="recordcard rec-rev" data-name="buzzard attack chopper" data-kind="Helicopter">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/buzzard-attack-chopper-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/buzzard-attack-chopper-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/buzzard-attack-chopper-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/buzzard-attack-chopper-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/buzzard-attack-chopper-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Buzzard Attack Chopper"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Helicopter</span>                <span class="recordcard__name">Buzzard Attack Chopper</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-canis-off-roader-one-eyed-willies" class="recordcard rec-rev" data-name="canis off-roader (one-eyed willie&#039;s)" data-kind="Off-Road">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/canis-one-eyed-willies-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/canis-one-eyed-willies-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/canis-one-eyed-willies-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/canis-one-eyed-willies-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/canis-one-eyed-willies-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Canis off-roader (One-Eyed Willie&#039;s)"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Off-Road</span>                <span class="recordcard__name">Canis off-roader (One-Eyed Willie&#039;s)</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-caracara-4x4" class="recordcard rec-rev" data-name="caracara 4x4" data-kind="SUV">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Caracara 4x4"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Caracara 4x4</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-carbon-rs" class="recordcard rec-rev" data-name="carbon rs" data-kind="Motorcycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/carbon-rs-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/carbon-rs-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/carbon-rs-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/carbon-rs-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/carbon-rs-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Carbon RS"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Carbon RS</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-carbonizzare" class="recordcard rec-rev" data-name="carbonizzare" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/carbonizzare-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/carbonizzare-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/carbonizzare-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/carbonizzare-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/carbonizzare-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Carbonizzare"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Carbonizzare</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-catamaran-yacht" class="recordcard rec-rev" data-name="catamaran yacht" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/catamaran-yacht-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/catamaran-yacht-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/catamaran-yacht-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/catamaran-yacht-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/catamaran-yacht-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Catamaran Yacht"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Catamaran Yacht</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-chaparral-premiere-400" class="recordcard rec-rev" data-name="chaparral premiere 400" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chaparral-premiere-400-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chaparral-premiere-400-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chaparral-premiere-400-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chaparral-premiere-400-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chaparral-premiere-400-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Chaparral Premiere 400"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Chaparral Premiere 400</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-chevrolet-stepside" class="recordcard rec-rev" data-name="chevrolet stepside" data-kind="Light Truck">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chevrolet-stepside-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chevrolet-stepside-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chevrolet-stepside-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chevrolet-stepside-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/chevrolet-stepside-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Chevrolet Stepside"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Chevrolet Stepside</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-chino" class="recordcard rec-rev" data-name="chino" data-kind="Muscle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/chino-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/chino-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/chino-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/chino-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/chino-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Chino"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Chino</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-clarion" class="recordcard rec-rev" data-name="clarion" data-kind="Motorboat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/clarion-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/clarion-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/clarion-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/clarion-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/clarion-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Clarion"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorboat</span>                <span class="recordcard__name">Clarion</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-classic-roadster-r-badge" class="recordcard rec-rev" data-name="classic roadster (r badge)" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/classic-roadster-r-badge-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/classic-roadster-r-badge-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/classic-roadster-r-badge-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/classic-roadster-r-badge-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/classic-roadster-r-badge-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Classic roadster (R badge)"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Classic roadster (R badge)</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-coast-guard" class="recordcard rec-rev" data-name="coast guard" data-kind="Emergency">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/coast-guard-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/coast-guard-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/coast-guard-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/coast-guard-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/coast-guard-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Coast Guard"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Emergency</span>                <span class="recordcard__name">Coast Guard</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-comet-retro-custom" class="recordcard rec-rev" data-name="comet retro custom" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-retro-custom-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-retro-custom-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-retro-custom-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-retro-custom-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-retro-custom-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Comet Retro Custom"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Comet Retro Custom</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-comet-s2-cabrio" class="recordcard rec-rev" data-name="comet s2 cabrio" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-s2-cabrio-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-s2-cabrio-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-s2-cabrio-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-s2-cabrio-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/comet-s2-cabrio-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Comet S2 Cabrio"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Comet S2 Cabrio</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-contender" class="recordcard rec-rev" data-name="contender" data-kind="SUV">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-contender.jpg" alt="Contender" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Contender</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-contender-39st" class="recordcard rec-rev" data-name="contender 39st" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/contender-39st-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/contender-39st-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/contender-39st-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/contender-39st-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/contender-39st-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Contender 39ST"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Contender 39ST</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-coquette" class="recordcard rec-rev" data-name="coquette" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Coquette"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Coquette</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-coquette-d10" class="recordcard rec-rev" data-name="coquette d10" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-d10-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-d10-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-d10-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-d10-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/coquette-d10-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Coquette D10"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Coquette D10</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-creado" class="recordcard rec-rev" data-name="creado" data-kind="Muscle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/creado-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/creado-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/creado-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/creado-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/creado-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Creado"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Creado</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-crownline-275-ss" class="recordcard rec-rev" data-name="crownline 275 ss" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/crownline-275-ss-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/crownline-275-ss-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/crownline-275-ss-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/crownline-275-ss-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/crownline-275-ss-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Crownline 275 SS"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Crownline 275 SS</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-cruiser" class="recordcard rec-rev" data-name="cruiser" data-kind="Bicycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/cruiser-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/cruiser-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/cruiser-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/cruiser-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/cruiser-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Cruiser"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Bicycle</span>                <span class="recordcard__name">Cruiser</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-cypher" class="recordcard rec-rev" data-name="cypher" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/cypher-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/cypher-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/cypher-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/cypher-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/cypher-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Cypher"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Cypher</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dashound" class="recordcard rec-rev" data-name="dashound" data-kind="Commercial">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-dashound.jpg" alt="Dashound" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Commercial</span>                <span class="recordcard__name">Dashound</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-deviant" class="recordcard rec-rev" data-name="deviant" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-deviant.jpg" alt="Deviant" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Deviant</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dive-boat" class="recordcard rec-rev" data-name="dive boat" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dive-boat-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dive-boat-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dive-boat-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dive-boat-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dive-boat-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Dive Boat"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Dive Boat</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dodo" class="recordcard rec-rev" data-name="dodo" data-kind="Plane">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dodo-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dodo-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dodo-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dodo-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/dodo-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Dodo"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Plane</span>                <span class="recordcard__name">Dodo</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dominator" class="recordcard rec-rev" data-name="dominator" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-dominator.jpg" alt="Dominator" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Dominator</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dominator-asp" class="recordcard rec-rev" data-name="dominator asp" data-kind="Muscle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dominator-asp-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dominator-asp-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dominator-asp-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dominator-asp-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dominator-asp-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Dominator ASP"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Dominator ASP</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dominator-gt" class="recordcard rec-rev" data-name="dominator gt" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-dominator-gt.jpg" alt="Dominator GT" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Dominator GT</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dominator-gtx" class="recordcard rec-rev" data-name="dominator gtx" data-kind="Muscle">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Dominator GTX</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dorado" class="recordcard rec-rev" data-name="dorado" data-kind="Light Truck">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-dorado.jpg" alt="Dorado" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Dorado</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-double-t" class="recordcard rec-rev" data-name="double t" data-kind="Motorcycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/double-t-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/double-t-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/double-t-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/double-t-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/double-t-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Double T"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Double T</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-dubsta" class="recordcard rec-rev" data-name="dubsta" data-kind="SUV">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dubsta-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dubsta-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dubsta-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dubsta-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/dubsta-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Dubsta"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Dubsta</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-duster" class="recordcard rec-rev" data-name="duster" data-kind="Plane">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/duster-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/duster-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/duster-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/duster-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/duster-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Duster"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Plane</span>                <span class="recordcard__name">Duster</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-elegy-retro-custom" class="recordcard rec-rev" data-name="elegy retro custom" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/elegy-retro-custom-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/elegy-retro-custom-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/elegy-retro-custom-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/elegy-retro-custom-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/elegy-retro-custom-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Elegy Retro Custom"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Elegy Retro Custom</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-emperor" class="recordcard rec-rev" data-name="emperor" data-kind="Sedan">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-emperor.jpg" alt="Emperor" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sedan</span>                <span class="recordcard__name">Emperor</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-frauscher-1017-gt" class="recordcard rec-rev" data-name="frauscher 1017 gt" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/frauscher-1017-gt-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/frauscher-1017-gt-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/frauscher-1017-gt-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/frauscher-1017-gt-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/frauscher-1017-gt-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Frauscher 1017 GT"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Frauscher 1017 GT</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-freight-train" class="recordcard rec-rev" data-name="freight train" data-kind="Train">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/freight-train-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/freight-train-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/freight-train-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/freight-train-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/freight-train-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Freight Train"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Train</span>                <span class="recordcard__name">Freight Train</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-furia" class="recordcard rec-rev" data-name="furia" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/furia-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Furia"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Furia</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-futo" class="recordcard rec-rev" data-name="futo" data-kind="Compact Car">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/futo-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/futo-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/futo-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/futo-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/futo-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Futo"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Compact Car</span>                <span class="recordcard__name">Futo</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-g-fifty" class="recordcard rec-rev" data-name="g-fifty" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/g-fifty-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/g-fifty-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/g-fifty-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/g-fifty-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/g-fifty-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="G-Fifty"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">G-Fifty</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-gauntlet-classic-custom" class="recordcard rec-rev" data-name="gauntlet classic custom" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-gauntlet-classic-custom.jpg" alt="Gauntlet Classic Custom" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Gauntlet Classic Custom</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-gauntlet-hellfire" class="recordcard rec-rev" data-name="gauntlet hellfire" data-kind="Muscle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-hellfire-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-hellfire-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-hellfire-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-hellfire-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-hellfire-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Gauntlet Hellfire"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Gauntlet Hellfire</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-gauntlet-interceptor" class="recordcard rec-rev" data-name="gauntlet interceptor" data-kind="Emergency">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Gauntlet Interceptor"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Emergency</span>                <span class="recordcard__name">Gauntlet Interceptor</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-ge-genesis" class="recordcard rec-rev" data-name="ge genesis" data-kind="Train">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/ge-genesis-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/ge-genesis-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/ge-genesis-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/ge-genesis-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/ge-genesis-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="GE Genesis"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Train</span>                <span class="recordcard__name">GE Genesis</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-granger" class="recordcard rec-rev" data-name="granger" data-kind="SUV">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Granger"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Granger</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-granger-3600lx" class="recordcard rec-rev" data-name="granger 3600lx" data-kind="Light Truck">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-3600lx-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-3600lx-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-3600lx-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-3600lx-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/granger-3600lx-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Granger 3600LX"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Granger 3600LX</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-growler" class="recordcard rec-rev" data-name="growler" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/growler-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/growler-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/growler-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/growler-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/growler-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Growler"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Growler</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-hellion" class="recordcard rec-rev" data-name="hellion" data-kind="SUV">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/hellion-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/hellion-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/hellion-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/hellion-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/hellion-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Hellion"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Hellion</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-highfield-sport-900" class="recordcard rec-rev" data-name="highfield sport 900" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/highfield-sport-900-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/highfield-sport-900-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/highfield-sport-900-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/highfield-sport-900-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/highfield-sport-900-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Highfield Sport 900"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Highfield Sport 900</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-impaler-sz" class="recordcard rec-rev" data-name="impaler sz" data-kind="Sedan">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/impaler-sz-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/impaler-sz-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/impaler-sz-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/impaler-sz-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/impaler-sz-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Impaler SZ"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sedan</span>                <span class="recordcard__name">Impaler SZ</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-infernus-classic" class="recordcard rec-rev" data-name="infernus classic" data-kind="Sports">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-infernus-classic.jpg" alt="Infernus Classic" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Infernus Classic</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-intruder" class="recordcard rec-rev" data-name="intruder" data-kind="Sedan">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/intruder-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/intruder-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/intruder-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/intruder-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/intruder-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Intruder"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sedan</span>                <span class="recordcard__name">Intruder</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-itali-gto" class="recordcard rec-rev" data-name="itali gto" data-kind="Sports">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-itali-gto.jpg" alt="Itali GTO" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Itali GTO</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-jet" class="recordcard rec-rev" data-name="jet" data-kind="Plane">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Jet"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Plane</span>                <span class="recordcard__name">Jet</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-jet-ski" class="recordcard rec-rev" data-name="jet ski" data-kind="Motorboat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-ski-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-ski-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-ski-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-ski-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/jet-ski-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Jet Ski"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorboat</span>                <span class="recordcard__name">Jet Ski</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-journey-ii" class="recordcard rec-rev" data-name="journey ii" data-kind="Light Truck">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Journey II</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-jubilee" class="recordcard rec-rev" data-name="jubilee" data-kind="Light Truck">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Jubilee"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Jubilee</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-jugular" class="recordcard rec-rev" data-name="jugular" data-kind="Sports">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-jugular.jpg" alt="Jugular" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Jugular</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-kamacho" class="recordcard rec-rev" data-name="kamacho" data-kind="SUV">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-kamacho.jpg" alt="Kamacho" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Kamacho</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-kawasaki-z800" class="recordcard rec-rev" data-name="kawasaki z800" data-kind="Motorcycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/kawasaki-z800-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/kawasaki-z800-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/kawasaki-z800-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/kawasaki-z800-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/kawasaki-z800-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Kawasaki Z800"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Kawasaki Z800</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-landstalker-xl" class="recordcard rec-rev" data-name="landstalker xl" data-kind="SUV">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/landstalker-xl-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/landstalker-xl-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/landstalker-xl-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/landstalker-xl-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/landstalker-xl-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Landstalker XL"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Landstalker XL</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-lombike" class="recordcard rec-rev" data-name="lombike" data-kind="Bicycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lombike-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lombike-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lombike-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lombike-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lombike-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="LomBike"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Bicycle</span>                <span class="recordcard__name">LomBike</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-lure-predator-s23" class="recordcard rec-rev" data-name="lure predator s23" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lure-predator-s23-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lure-predator-s23-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lure-predator-s23-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lure-predator-s23-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/lure-predator-s23-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Lure Predator S23"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Lure Predator S23</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-mammatus" class="recordcard rec-rev" data-name="mammatus" data-kind="Plane">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mammatus-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mammatus-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mammatus-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mammatus-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mammatus-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Mammatus"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Plane</span>                <span class="recordcard__name">Mammatus</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-manchez" class="recordcard rec-rev" data-name="manchez" data-kind="Motorcycle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/manchez-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/manchez-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/manchez-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/manchez-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/manchez-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Manchez"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycle</span>                <span class="recordcard__name">Manchez</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-marquis" class="recordcard rec-rev" data-name="marquis" data-kind="Boat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/marquis-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/marquis-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/marquis-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/marquis-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/marquis-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Marquis"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Boat</span>                <span class="recordcard__name">Marquis</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-maverick" class="recordcard rec-rev" data-name="maverick" data-kind="Helicopter">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/maverick-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/maverick-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/maverick-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/maverick-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/maverick-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Maverick"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Helicopter</span>                <span class="recordcard__name">Maverick</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-mesa" class="recordcard rec-rev" data-name="mesa" data-kind="Light Truck">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-mesa.jpg" alt="Mesa" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Light Truck</span>                <span class="recordcard__name">Mesa</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-metrorail-train" class="recordcard rec-rev" data-name="metrorail train" data-kind="Train">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/metrorail-train-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/metrorail-train-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/metrorail-train-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/metrorail-train-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/metrorail-train-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Metrorail Train"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Train</span>                <span class="recordcard__name">Metrorail Train</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-mobility-scooter" class="recordcard rec-rev" data-name="mobility scooter" data-kind="Mobility Device">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mobility-scooter-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mobility-scooter-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mobility-scooter-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mobility-scooter-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/mobility-scooter-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Mobility Scooter"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Mobility Device</span>                <span class="recordcard__name">Mobility Scooter</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-new-seashark" class="recordcard rec-rev" data-name="new seashark" data-kind="Motorboat">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/new-seashark-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="New Seashark"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorboat</span>                <span class="recordcard__name">New Seashark</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-nimbus" class="recordcard rec-rev" data-name="nimbus" data-kind="Plane">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/nimbus-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/nimbus-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/nimbus-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/nimbus-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/nimbus-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Nimbus"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Plane</span>                <span class="recordcard__name">Nimbus</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-omnis-e-gt" class="recordcard rec-rev" data-name="omnis e-gt" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/omnis-e-gt-640.webp 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/omnis-e-gt-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/omnis-e-gt-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/vehicles/gta-6/omnis-e-gt-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/vehicles/gta-6/omnis-e-gt-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Omnis e-GT"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Omnis e-GT</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-outlaw" class="recordcard rec-rev" data-name="outlaw" data-kind="SUV">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/outlaw-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/outlaw-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/outlaw-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/outlaw-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/outlaw-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Outlaw"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SUV</span>                <span class="recordcard__name">Outlaw</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-packer" class="recordcard rec-rev" data-name="packer" data-kind="Commercial">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/packer-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/packer-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/packer-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/packer-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/packer-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Packer"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Commercial</span>                <span class="recordcard__name">Packer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-paragon-r" class="recordcard rec-rev" data-name="paragon r" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/paragon-r-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/paragon-r-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/paragon-r-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/paragon-r-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/paragon-r-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Paragon R"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Paragon R</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-penumbra" class="recordcard rec-rev" data-name="penumbra" data-kind="Sports">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/penumbra-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/penumbra-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/penumbra-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/penumbra-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/penumbra-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Penumbra"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Penumbra</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-phantom" class="recordcard rec-rev" data-name="phantom" data-kind="Commercial">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/phantom-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/phantom-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/phantom-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/phantom-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/phantom-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Phantom"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Commercial</span>                <span class="recordcard__name">Phantom</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-cheval-picador" class="recordcard rec-rev" data-name="cheval picador" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-cheval-picador.jpg" alt="Cheval Picador" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Cheval Picador</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buckingham-volatus" class="recordcard rec-rev" data-name="buckingham volatus" data-kind="Helicopters">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-buckingham-volatus.jpg" alt="Buckingham Volatus" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Helicopters</span>                <span class="recordcard__name">Buckingham Volatus</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bf-surfer" class="recordcard rec-rev" data-name="bf surfer" data-kind="Vans">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Vans</span>                <span class="recordcard__name">BF Surfer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-ubermacht-fcr-1000" class="recordcard rec-rev" data-name="übermacht fcr 1000" data-kind="Motorcycles">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-ubermacht-fcr-1000.jpg" alt="Übermacht FCR 1000" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycles</span>                <span class="recordcard__name">Übermacht FCR 1000</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-vapid-sandking-xt" class="recordcard rec-rev" data-name="vapid sandking xt" data-kind="Off-Road">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-vapid-sandking-xt.jpg" alt="Vapid Sandking XT" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Off-Road</span>                <span class="recordcard__name">Vapid Sandking XT</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-pegassi-police-tempesta" class="recordcard rec-rev" data-name="pegassi police tempesta" data-kind="Super">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Super</span>                <span class="recordcard__name">Pegassi Police Tempesta</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-invetero-coquette-classic" class="recordcard rec-rev" data-name="invetero coquette classic" data-kind="Sports Classics">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-invetero-coquette-classic.jpg" alt="Invetero Coquette Classic" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports Classics</span>                <span class="recordcard__name">Invetero Coquette Classic</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-mercury-comet-1st-gen" class="recordcard rec-rev" data-name="mercury comet (1st gen)" data-kind="Coupes">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Coupes</span>                <span class="recordcard__name">Mercury Comet (1st Gen)</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-declasse-granger-police" class="recordcard rec-rev" data-name="declasse granger police" data-kind="Emergency">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-declasse-granger-police.jpg" alt="Declasse Granger Police" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Emergency</span>                <span class="recordcard__name">Declasse Granger Police</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buckingham-windsor-drop" class="recordcard rec-rev" data-name="buckingham windsor drop" data-kind="Coupes">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-buckingham-windsor-drop.jpg" alt="Buckingham Windsor Drop" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Coupes</span>                <span class="recordcard__name">Buckingham Windsor Drop</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-mtl-wastelander" class="recordcard rec-rev" data-name="mtl wastelander" data-kind="Service">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-mtl-wastelander.jpg" alt="MTL Wastelander" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Service</span>                <span class="recordcard__name">MTL Wastelander</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-classique-stallion" class="recordcard rec-rev" data-name="classique stallion" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-classique-stallion.jpg" alt="Classique Stallion" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Classique Stallion</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-vysser-neo" class="recordcard rec-rev" data-name="vysser neo" data-kind="Sports">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Vysser Neo</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-bf-injection" class="recordcard rec-rev" data-name="bf injection" data-kind="Off-Road">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Off-Road</span>                <span class="recordcard__name">BF Injection</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-vapid-hustler" class="recordcard rec-rev" data-name="vapid hustler" data-kind="Muscle">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-vapid-hustler.jpg" alt="Vapid Hustler" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Vapid Hustler</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-stanley-fieldmaster" class="recordcard rec-rev" data-name="stanley fieldmaster" data-kind="Utility">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-stanley-fieldmaster.jpg" alt="Stanley Fieldmaster" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Utility</span>                <span class="recordcard__name">Stanley Fieldmaster</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-western-cliffhanger" class="recordcard rec-rev" data-name="western cliffhanger" data-kind="Motorcycles">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-western-cliffhanger.jpg" alt="Western Cliffhanger" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycles</span>                <span class="recordcard__name">Western Cliffhanger</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-hvy-bulldozer" class="recordcard rec-rev" data-name="hvy bulldozer" data-kind="Industrial">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-hvy-bulldozer.jpg" alt="HVY Bulldozer" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Industrial</span>                <span class="recordcard__name">HVY Bulldozer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-grotti-bestia-gts" class="recordcard rec-rev" data-name="grotti bestia gts" data-kind="Sports">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Grotti Bestia GTS</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-hauners-rhino-tank" class="recordcard rec-rev" data-name="hauners rhino tank" data-kind="Military">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-hauners-rhino-tank.jpg" alt="Hauners Rhino Tank" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Military</span>                <span class="recordcard__name">Hauners Rhino Tank</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-mer-can-blast" class="recordcard rec-rev" data-name="mer-can blast" data-kind="Off-Road">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-mer-can-blast.jpg" alt="Mer-Can Blast" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Off-Road</span>                <span class="recordcard__name">Mer-Can Blast</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-willard-faction-custom-donk" class="recordcard rec-rev" data-name="willard faction custom donk" data-kind="Muscle">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Muscle</span>                <span class="recordcard__name">Willard Faction Custom Donk</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-nagasaki-caddy" class="recordcard rec-rev" data-name="nagasaki caddy" data-kind="Utility">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-nagasaki-caddy.jpg" alt="Nagasaki Caddy" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Utility</span>                <span class="recordcard__name">Nagasaki Caddy</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-willard-trotter-95" class="recordcard rec-rev" data-name="willard trotter &#039;95" data-kind="Vans">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Vans</span>                <span class="recordcard__name">Willard Trotter &#039;95</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-declasse-granger-taxi" class="recordcard rec-rev" data-name="declasse granger taxi" data-kind="Service">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-declasse-granger-taxi.jpg" alt="Declasse Granger Taxi" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Service</span>                <span class="recordcard__name">Declasse Granger Taxi</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-maibatsu-penumbra-ff" class="recordcard rec-rev" data-name="maibatsu penumbra ff" data-kind="Sports">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sports</span>                <span class="recordcard__name">Maibatsu Penumbra FF</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-maibatsu-iota" class="recordcard rec-rev" data-name="maibatsu iota" data-kind="Commercial">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-maibatsu-iota.jpg" alt="Maibatsu Iota" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Commercial</span>                <span class="recordcard__name">Maibatsu Iota</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-progen-emerus" class="recordcard rec-rev" data-name="progen emerus" data-kind="Super">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-progen-emerus.jpg" alt="Progen Emerus" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Super</span>                <span class="recordcard__name">Progen Emerus</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-buckingham-valkyrie" class="recordcard rec-rev" data-name="buckingham valkyrie" data-kind="Helicopters">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-buckingham-valkyrie.jpg" alt="Buckingham Valkyrie" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Helicopters</span>                <span class="recordcard__name">Buckingham Valkyrie</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/vehicles/lead-principe-lectro" class="recordcard rec-rev" data-name="principe lectro" data-kind="Motorcycles">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/vehicles/lead-principe-lectro.jpg" alt="Principe Lectro" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Motorcycles</span>                <span class="recordcard__name">Principe Lectro</span>
+              </div>
+            </a>
+                  </div>
+        <p class="list-empty-msg" id="listEmptyMsg" hidden>No vehicles of leonida match your filter.</p>
+        <p class="muted-note">Artwork &copy; Rockstar Games — used for identification and commentary. See <a href="/GTAIndex-Demo/about#credits">credits &amp; takedown</a>.</p>
+          </div>
+  </section>
+
+  
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script src="/GTAIndex-Demo/assets/js/list.js"></script>
+</body>
+</html>

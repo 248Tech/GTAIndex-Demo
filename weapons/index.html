@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 Weapons — The Full Arsenal — GTAIndex · Fan Project demo</title>
+<meta name="description" content="The arsenal of Grand Theft Auto VI — added as details are confirmed.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+    <section class="section list-page">
+    <div class="wrap">
+      <div class="list-head">
+        <span class="eyebrow">Database</span>
+        <h1 class="display list-title">Weapons of Leonida <span class="list-count" id="listCount">81</span></h1>
+        <p class="list-blurb">The arsenal of Grand Theft Auto VI — added as details are confirmed.</p>
+      </div>
+
+              
+        <div class="list-toolbar">
+          <div class="list-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M16.5 16.5 21 21"></path></svg>
+            <input type="search" id="listSearch" placeholder="Filter weapons of leonida…" aria-label="Filter weapons of leonida">
+          </div>
+                      <div class="list-chips">
+              <button type="button" class="list-chip is-on" data-kind="">All</button>
+                              <button type="button" class="list-chip" data-kind="Assault Rifles">Assault Rifles</button>
+                              <button type="button" class="list-chip" data-kind="Explosive">Explosive</button>
+                              <button type="button" class="list-chip" data-kind="Handgun">Handgun</button>
+                              <button type="button" class="list-chip" data-kind="Handguns">Handguns</button>
+                              <button type="button" class="list-chip" data-kind="LMG">LMG</button>
+                              <button type="button" class="list-chip" data-kind="Launchers">Launchers</button>
+                              <button type="button" class="list-chip" data-kind="Machine Gun">Machine Gun</button>
+                              <button type="button" class="list-chip" data-kind="Melee">Melee</button>
+                              <button type="button" class="list-chip" data-kind="Pistol">Pistol</button>
+                              <button type="button" class="list-chip" data-kind="Revolver">Revolver</button>
+                              <button type="button" class="list-chip" data-kind="Rifle">Rifle</button>
+                              <button type="button" class="list-chip" data-kind="SMG">SMG</button>
+                              <button type="button" class="list-chip" data-kind="Shotgun">Shotgun</button>
+                              <button type="button" class="list-chip" data-kind="Shotguns">Shotguns</button>
+                              <button type="button" class="list-chip" data-kind="Sniper">Sniper</button>
+                              <button type="button" class="list-chip" data-kind="Sniper Rifles">Sniper Rifles</button>
+                              <button type="button" class="list-chip" data-kind="Submachine Gun">Submachine Gun</button>
+                              <button type="button" class="list-chip" data-kind="Throwable">Throwable</button>
+                              <button type="button" class="list-chip" data-kind="Thrown">Thrown</button>
+                          </div>
+                    <label class="list-sort"><span>Sort</span>
+            <select id="listSort">
+              <option value="featured">Featured</option>
+              <option value="az">A–Z</option>
+              <option value="za">Z–A</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="recordcards list-grid" id="listGrid">
+                                  <a href="/GTAIndex-Demo/weapons/girardi-es9" class="recordcard rec-rev" data-name="girardi es9 pistol" data-kind="Handgun">
+              <div class="recordcard__img"><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.avif 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.avif 1280w" sizes="(max-width:700px) 100vw, 33vw">
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.webp 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.jpg"
+       srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.jpg 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Personalized weapon variants for Jason and Lucia"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handgun</span>                <span class="recordcard__name">Girardi ES9 Pistol</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/klose-k17" class="recordcard rec-rev" data-name="klose k17 pistol" data-kind="Handgun">
+              <div class="recordcard__img"><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.avif 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.avif 1280w" sizes="(max-width:700px) 100vw, 33vw">
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.webp 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.jpg"
+       srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.jpg 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Personalized weapon variants for Jason and Lucia"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handgun</span>                <span class="recordcard__name">Klose K17 Pistol</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/molotov" class="recordcard rec-rev" data-name="molotov cocktail" data-kind="Thrown">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Molotov Cocktail"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Thrown</span>                <span class="recordcard__name">Molotov Cocktail</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/pistol" class="recordcard rec-rev" data-name="pistol" data-kind="Handgun">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vpwx0qcejxtypet0dbaed/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vpwx0qcejxtypet0dbaed/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vpwx0qcejxtypet0dbaed/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vpwx0qcejxtypet0dbaed/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vpwx0qcejxtypet0dbaed/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Pistol"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handgun</span>                <span class="recordcard__name">Pistol</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/combat-pistol" class="recordcard rec-rev" data-name="combat pistol" data-kind="Handgun">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vrdxzsj7v7cpkq7r4qca6/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vrdxzsj7v7cpkq7r4qca6/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vrdxzsj7v7cpkq7r4qca6/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vrdxzsj7v7cpkq7r4qca6/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vrdxzsj7v7cpkq7r4qca6/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Combat Pistol"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handgun</span>                <span class="recordcard__name">Combat Pistol</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/hawk-little-morgan-revolvers" class="recordcard rec-rev" data-name="hawk &amp; little morgan revolvers" data-kind="Revolver">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-640.webp 640w, /GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.jpg"
+       srcset="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-640.jpg 640w, /GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Hawk &amp; Little Morgan Revolvers — GTA VI Ultimate Edition, view 2"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Revolver</span>                <span class="recordcard__name">Hawk &amp; Little Morgan Revolvers</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/micro-smg" class="recordcard rec-rev" data-name="micro smg" data-kind="Submachine Gun">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Micro SMG"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Submachine Gun</span>                <span class="recordcard__name">Micro SMG</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/smg" class="recordcard rec-rev" data-name="smg" data-kind="Submachine Gun">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vtsjdpnnd0ymtgzjfyny6/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vtsjdpnnd0ymtgzjfyny6/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vtsjdpnnd0ymtgzjfyny6/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vtsjdpnnd0ymtgzjfyny6/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vtsjdpnnd0ymtgzjfyny6/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="SMG"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Submachine Gun</span>                <span class="recordcard__name">SMG</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/assault-rifle" class="recordcard rec-rev" data-name="assault rifle" data-kind="Rifle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Assault Rifle"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Rifle</span>                <span class="recordcard__name">Assault Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/carbine-rifle" class="recordcard rec-rev" data-name="carbine rifle" data-kind="Rifle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Carbine Rifle"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Rifle</span>                <span class="recordcard__name">Carbine Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/pump-shotgun" class="recordcard rec-rev" data-name="pump shotgun" data-kind="Shotgun">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Pump Shotgun"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Shotgun</span>                <span class="recordcard__name">Pump Shotgun</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/sniper-rifle" class="recordcard rec-rev" data-name="sniper rifle" data-kind="Sniper">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14wgycr8016at9w1420y4am/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14wgycr8016at9w1420y4am/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14wgycr8016at9w1420y4am/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14wgycr8016at9w1420y4am/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14wgycr8016at9w1420y4am/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Sniper Rifle"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sniper</span>                <span class="recordcard__name">Sniper Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/grenade" class="recordcard rec-rev" data-name="grenade" data-kind="Thrown">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Grenade"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Thrown</span>                <span class="recordcard__name">Grenade</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/baseball-bat" class="recordcard rec-rev" data-name="baseball bat" data-kind="Melee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w648vgajkfq09v0v0qgzf/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w648vgajkfq09v0v0qgzf/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w648vgajkfq09v0v0qgzf/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w648vgajkfq09v0v0qgzf/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w648vgajkfq09v0v0qgzf/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Baseball Bat"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Baseball Bat</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/knife" class="recordcard rec-rev" data-name="knife" data-kind="Melee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Knife"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Knife</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-girardi-es9" class="recordcard rec-rev" data-name="girardi es9" data-kind="Pistol">
+              <div class="recordcard__img"><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.avif 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.avif 1280w" sizes="(max-width:700px) 100vw, 33vw">
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.webp 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.jpg"
+       srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.jpg 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Personalized weapon variants for Jason and Lucia"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Pistol</span>                <span class="recordcard__name">Girardi ES9</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-klose-k17" class="recordcard rec-rev" data-name="klose k17" data-kind="Pistol">
+              <div class="recordcard__img"><picture>
+    <source type="image/avif" srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.avif 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.avif 1280w" sizes="(max-width:700px) 100vw, 33vw">
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.webp 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.jpg"
+       srcset="/GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-640.jpg 640w, /GTAIndex-Demo/media/edition-2026/personalized-weapon-variants-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Personalized weapon variants for Jason and Lucia"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Pistol</span>                <span class="recordcard__name">Klose K17</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hawk-little-revolver" class="recordcard rec-rev" data-name="hawk &amp; little revolver" data-kind="Revolver">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-640.webp 640w, /GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.jpg"
+       srcset="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-640.jpg 640w, /GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Hawk &amp; Little Morgan Revolvers — GTA VI Ultimate Edition, view 2"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Revolver</span>                <span class="recordcard__name">Hawk &amp; Little revolver</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-little-morgan-revolver" class="recordcard rec-rev" data-name="little morgan revolver" data-kind="Revolver">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-640.webp 640w, /GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.jpg"
+       srcset="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-640.jpg 640w, /GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Hawk &amp; Little Morgan Revolvers — GTA VI Ultimate Edition, view 2"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Revolver</span>                <span class="recordcard__name">Little Morgan revolver</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-357-revolver" class="recordcard rec-rev" data-name=".357 revolver" data-kind="Revolver">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Duke Arms Mustang .357 Revolver"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Revolver</span>                <span class="recordcard__name">.357 Revolver</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-bersa-thunder-380-inspired-pistol" class="recordcard rec-rev" data-name="bersa thunder 380-inspired pistol" data-kind="Pistol">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-bersa-thunder-380-inspired-pistol-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-bersa-thunder-380-inspired-pistol-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-bersa-thunder-380-inspired-pistol-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-bersa-thunder-380-inspired-pistol-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-bersa-thunder-380-inspired-pistol-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bersa Thunder 380-inspired pistol"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Pistol</span>                <span class="recordcard__name">Bersa Thunder 380-inspired pistol</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-m10-inspired-smg" class="recordcard rec-rev" data-name="m10-inspired smg" data-kind="Submachine Gun">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Submachine Gun</span>                <span class="recordcard__name">M10-inspired SMG</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-compact-smg" class="recordcard rec-rev" data-name="compact smg" data-kind="Submachine Gun">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Submachine Gun</span>                <span class="recordcard__name">Compact SMG</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-assault-rifle" class="recordcard rec-rev" data-name="assault rifle" data-kind="Rifle">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Assault Rifle"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Rifle</span>                <span class="recordcard__name">Assault Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-bolt-action-sniper" class="recordcard rec-rev" data-name="bolt action sniper" data-kind="Sniper">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/bolt-action-sniper-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/bolt-action-sniper-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/bolt-action-sniper-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/bolt-action-sniper-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/bolt-action-sniper-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bolt Action Sniper"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sniper</span>                <span class="recordcard__name">Bolt Action Sniper</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-grenade-launcher" class="recordcard rec-rev" data-name="grenade launcher" data-kind="Explosive">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Grenade Launcher"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Explosive</span>                <span class="recordcard__name">Grenade Launcher</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-molotov-fire-bottle" class="recordcard rec-rev" data-name="molotov (fire bottle)" data-kind="Throwable">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Molotov Cocktail"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Molotov (fire bottle)</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-baseball-bat" class="recordcard rec-rev" data-name="baseball bat" data-kind="Melee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/baseball-bat-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/baseball-bat-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/baseball-bat-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/baseball-bat-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/baseball-bat-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Baseball Bat"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Baseball Bat</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-crowbar" class="recordcard rec-rev" data-name="crowbar" data-kind="Melee">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-crowbar.jpg" alt="Crowbar" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Crowbar</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-duke-arms-556-assault-rifle" class="recordcard rec-rev" data-name="duke arms 556 assault rifle" data-kind="Assault Rifles">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-duke-arms-556-assault-rifle.jpg" alt="Duke Arms 556 Assault Rifle" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Assault Rifles</span>                <span class="recordcard__name">Duke Arms 556 Assault Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-moreland-850-shotgun" class="recordcard rec-rev" data-name="moreland 850 shotgun" data-kind="Shotguns">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-moreland-850-shotgun.jpg" alt="Moreland 850 Shotgun" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Shotguns</span>                <span class="recordcard__name">Moreland 850 Shotgun</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-shrewsbury-akm-assault-rifle" class="recordcard rec-rev" data-name="shrewsbury akm assault rifle" data-kind="Assault Rifles">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-shrewsbury-akm-assault-rifle.jpg" alt="Shrewsbury AKM Assault Rifle" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Assault Rifles</span>                <span class="recordcard__name">Shrewsbury AKM Assault Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-duke-arms-ar-15-carbine" class="recordcard rec-rev" data-name="duke arms ar-15 carbine" data-kind="Assault Rifles">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-duke-arms-ar-15-carbine.jpg" alt="Duke Arms AR-15 Carbine" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Assault Rifles</span>                <span class="recordcard__name">Duke Arms AR-15 Carbine</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-vom-feuer-carbine-rifle" class="recordcard rec-rev" data-name="vom feuer carbine rifle" data-kind="Assault Rifles">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w0khdrr0gdqpcyp9qdrm2/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Carbine Rifle"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Assault Rifles</span>                <span class="recordcard__name">Vom Feuer Carbine Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-combat-mg" class="recordcard rec-rev" data-name="combat mg" data-kind="LMG">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">LMG</span>                <span class="recordcard__name">Combat MG</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hawk-little-compact-smg" class="recordcard rec-rev" data-name="hawk &amp; little compact smg" data-kind="SMG">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SMG</span>                <span class="recordcard__name">Hawk &amp; Little Compact SMG</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-double-barrel-shotgun" class="recordcard rec-rev" data-name="double barrel shotgun" data-kind="Shotguns">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-double-barrel-shotgun.jpg" alt="Double Barrel Shotgun" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Shotguns</span>                <span class="recordcard__name">Double Barrel Shotgun</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-sm-dw9" class="recordcard rec-rev" data-name="s&amp;m dw9" data-kind="SMG">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-sm-dw9.jpg" alt="S&amp;M DW9" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SMG</span>                <span class="recordcard__name">S&amp;M DW9</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-fire-bottle" class="recordcard rec-rev" data-name="fire bottle" data-kind="Throwable">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-fire-bottle.jpg" alt="Fire Bottle" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Fire Bottle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-flashbang" class="recordcard rec-rev" data-name="flashbang" data-kind="Throwable">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Flashbang"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Flashbang</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-vom-feuer-flashlight" class="recordcard rec-rev" data-name="vom feuer flashlight" data-kind="Melee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashlight-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashlight-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashlight-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashlight-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashlight-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Vom Feuer Flashlight"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Vom Feuer Flashlight</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-golf-ball" class="recordcard rec-rev" data-name="golf ball" data-kind="Throwable">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-golf-ball.jpg" alt="Golf Ball" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Golf Ball</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-golf-club" class="recordcard rec-rev" data-name="golf club" data-kind="Melee">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-golf-club.jpg" alt="Golf Club" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Golf Club</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-shrewsbury-grenade-launcher" class="recordcard rec-rev" data-name="shrewsbury grenade launcher" data-kind="Launchers">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/grenade-launcher-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Grenade Launcher"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Launchers</span>                <span class="recordcard__name">Shrewsbury Grenade Launcher</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hammer" class="recordcard rec-rev" data-name="hammer" data-kind="Melee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/hammer-vi-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/hammer-vi-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/hammer-vi-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/hammer-vi-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/hammer-vi-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Hammer"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Hammer</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-heavy-pistol" class="recordcard rec-rev" data-name="heavy pistol" data-kind="Handguns">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handguns</span>                <span class="recordcard__name">Heavy Pistol</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-shrewsbury-hunter-sniper" class="recordcard rec-rev" data-name="shrewsbury hunter sniper" data-kind="Sniper Rifles">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sniper Rifles</span>                <span class="recordcard__name">Shrewsbury Hunter Sniper</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hunting-knife" class="recordcard rec-rev" data-name="hunting knife" data-kind="Melee">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-hunting-knife.jpg" alt="Hunting Knife" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Hunting Knife</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-jerry-can" class="recordcard rec-rev" data-name="jerry can" data-kind="Throwable">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-jerry-can.jpg" alt="Jerry Can" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Jerry Can</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hawk-little-knife" class="recordcard rec-rev" data-name="hawk &amp; little knife" data-kind="Melee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w7yrbf7nfwpmprghpdp2j/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Knife"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Hawk &amp; Little Knife</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-knuckle-dusters" class="recordcard rec-rev" data-name="knuckle dusters" data-kind="Melee">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-knuckle-dusters.jpg" alt="Knuckle Dusters" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Knuckle Dusters</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-mac-11" class="recordcard rec-rev" data-name="mac-11" data-kind="SMG">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SMG</span>                <span class="recordcard__name">MAC-11</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-micro-draco-compact-rifle" class="recordcard rec-rev" data-name="micro draco compact rifle" data-kind="Assault Rifles">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-micro-draco-compact-rifle.jpg" alt="Micro Draco Compact Rifle" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Assault Rifles</span>                <span class="recordcard__name">Micro Draco Compact Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-shrewsbury-micro-smg" class="recordcard rec-rev" data-name="shrewsbury micro smg" data-kind="SMG">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vt3k9kac6rq85gndz62yr/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Micro SMG"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SMG</span>                <span class="recordcard__name">Shrewsbury Micro SMG</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-molotov" class="recordcard rec-rev" data-name="molotov" data-kind="Throwable">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vndr9qt7k4p95s18sjgg7/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Molotov Cocktail"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Molotov</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hawk-little-morgan-revolver" class="recordcard rec-rev" data-name="hawk &amp; little morgan revolver" data-kind="Handguns">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-640.webp 640w, /GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.jpg"
+       srcset="/GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-640.jpg 640w, /GTAIndex-Demo/media/weapons/hawk-little-morgan-revolvers/ultimate_edition_hawk_and_little_morgan_revolvers_02-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Hawk &amp; Little Morgan Revolvers — GTA VI Ultimate Edition, view 2"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handguns</span>                <span class="recordcard__name">Hawk &amp; Little Morgan Revolver</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hawk-little-mp5-smg" class="recordcard rec-rev" data-name="hawk &amp; little mp5 smg" data-kind="SMG">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Heckler &amp; Koch MP5/40-inspired submachine gun"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SMG</span>                <span class="recordcard__name">Hawk &amp; Little MP5 SMG</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-duke-arms-mustang-357-revolver" class="recordcard rec-rev" data-name="duke arms mustang .357 revolver" data-kind="Handguns">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/mustang-357-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Duke Arms Mustang .357 Revolver"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handguns</span>                <span class="recordcard__name">Duke Arms Mustang .357 Revolver</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-nipper-38" class="recordcard rec-rev" data-name="nipper .38" data-kind="Handguns">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-nipper-38.jpg" alt="Nipper .38" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handguns</span>                <span class="recordcard__name">Nipper .38</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-pipe-wrench" class="recordcard rec-rev" data-name="pipe wrench" data-kind="Melee">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Pipe Wrench</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hawk-little-pistol" class="recordcard rec-rev" data-name="hawk &amp; little pistol" data-kind="Handguns">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handguns</span>                <span class="recordcard__name">Hawk &amp; Little Pistol</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-pool-cue" class="recordcard rec-rev" data-name="pool cue" data-kind="Melee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/pool-cue-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/pool-cue-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/pool-cue-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/pool-cue-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/pool-cue-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Pool Cue"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Pool Cue</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-shrewsbury-pump-action-shotgun" class="recordcard rec-rev" data-name="shrewsbury pump action shotgun" data-kind="Shotguns">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w1mgwyxfhvtnzkv24hpap/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Pump Shotgun"
+               loading="lazy" decoding="async" class="">
+</picture></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Shotguns</span>                <span class="recordcard__name">Shrewsbury Pump Action Shotgun</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-shrewsbury-rpg-rocket-launcher" class="recordcard rec-rev" data-name="shrewsbury rpg (rocket launcher)" data-kind="Launchers">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-shrewsbury-rpg-rocket-launcher.jpg" alt="Shrewsbury RPG (Rocket Launcher)" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Launchers</span>                <span class="recordcard__name">Shrewsbury RPG (Rocket Launcher)</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-ruger-1022-sniper" class="recordcard rec-rev" data-name="ruger 10/22 sniper" data-kind="Sniper Rifles">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sniper Rifles</span>                <span class="recordcard__name">Ruger 10/22 Sniper</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-scar-assault-rifle" class="recordcard rec-rev" data-name="scar assault rifle" data-kind="Assault Rifles">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Assault Rifles</span>                <span class="recordcard__name">Scar Assault Rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-coil-shocker" class="recordcard rec-rev" data-name="coil shocker" data-kind="Handguns">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handguns</span>                <span class="recordcard__name">Coil Shocker</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-hawk-little-smoke-grenade" class="recordcard rec-rev" data-name="hawk &amp; little smoke grenade" data-kind="Throwable">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-hawk-little-smoke-grenade.jpg" alt="Hawk &amp; Little Smoke Grenade" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Hawk &amp; Little Smoke Grenade</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-speargun" class="recordcard rec-rev" data-name="speargun" data-kind="Throwable">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-speargun.jpg" alt="Speargun" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Speargun</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-spp-mp9" class="recordcard rec-rev" data-name="spp / mp9" data-kind="SMG">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SMG</span>                <span class="recordcard__name">SPP / MP9</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-springfield-armory-m1a-sniper" class="recordcard rec-rev" data-name="springfield armory m1a sniper" data-kind="Sniper Rifles">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-springfield-armory-m1a-sniper.jpg" alt="Springfield Armory M1A Sniper" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sniper Rifles</span>                <span class="recordcard__name">Springfield Armory M1A Sniper</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-sticky-bomb" class="recordcard rec-rev" data-name="sticky bomb" data-kind="Throwable">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-sticky-bomb.jpg" alt="Sticky Bomb" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Throwable</span>                <span class="recordcard__name">Sticky Bomb</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-switchblade" class="recordcard rec-rev" data-name="switchblade" data-kind="Melee">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-switchblade.jpg" alt="Switchblade" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Switchblade</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-pistol-50" class="recordcard rec-rev" data-name="pistol .50" data-kind="Handguns">
+              <div class="recordcard__img"><img src="/GTAIndex-Demo/media/leads/weapons/lead-pistol-50.jpg" alt="Pistol .50" loading="lazy" decoding="async"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handguns</span>                <span class="recordcard__name">Pistol .50</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-heavy-machine-gun" class="recordcard rec-rev" data-name="heavy machine gun" data-kind="Machine Gun">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Machine Gun</span>                <span class="recordcard__name">Heavy Machine Gun</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-capo-pistol" class="recordcard rec-rev" data-name="capo pistol" data-kind="Handguns">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-capo-pistol-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-capo-pistol-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-capo-pistol-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-capo-pistol-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-capo-pistol-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Capo pistol"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Handguns</span>                <span class="recordcard__name">Capo pistol</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-duke-assault-sniper-rifle" class="recordcard rec-rev" data-name="duke assault sniper rifle" data-kind="Sniper Rifles">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-assault-sniper-rifle-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-assault-sniper-rifle-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-assault-sniper-rifle-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-assault-sniper-rifle-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-assault-sniper-rifle-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Duke assault sniper rifle"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Sniper Rifles</span>                <span class="recordcard__name">Duke assault sniper rifle</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-duke-special-ops-carbine" class="recordcard rec-rev" data-name="duke special ops carbine" data-kind="Assault Rifles">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-special-ops-carbine-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-special-ops-carbine-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-special-ops-carbine-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-special-ops-carbine-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-duke-special-ops-carbine-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Duke special ops carbine"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Assault Rifles</span>                <span class="recordcard__name">Duke special ops carbine</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-heckler-koch-mp540-inspired-submachine-gun" class="recordcard rec-rev" data-name="heckler &amp; koch mp5/40-inspired submachine gun" data-kind="SMG">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-heckler-koch-mp5-40-inspired-submachine-gun-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Heckler &amp; Koch MP5/40-inspired submachine gun"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">SMG</span>                <span class="recordcard__name">Heckler &amp; Koch MP5/40-inspired submachine gun</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-mini-golf-club" class="recordcard rec-rev" data-name="mini golf club" data-kind="Melee">
+              <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-mini-golf-club-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-mini-golf-club-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-mini-golf-club-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-mini-golf-club-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/unnamed-gta-vi-mini-golf-club-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Mini golf club"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Mini golf club</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/weapons/lead-golf-driver" class="recordcard rec-rev" data-name="golf driver" data-kind="Melee">
+              <div class="recordcard__img"></div>
+              <div class="recordcard__grad"></div>
+              <div class="recordcard__label">
+                <span class="recordcard__kind">Melee</span>                <span class="recordcard__name">Golf Driver</span>
+              </div>
+            </a>
+                  </div>
+        <p class="list-empty-msg" id="listEmptyMsg" hidden>No weapons of leonida match your filter.</p>
+        <p class="muted-note">Artwork &copy; Rockstar Games — used for identification and commentary. See <a href="/GTAIndex-Demo/about#credits">credits &amp; takedown</a>.</p>
+          </div>
+  </section>
+
+  
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script src="/GTAIndex-Demo/assets/js/list.js"></script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 radio stations, podcasts and soundtrack album — GTAIndex · Fan Project demo</title>
+<meta name="description" content="Rockstar reveals six GTA VI radio stations — Cocoteo FM, Back Country Radio, AfroBank FM, The Chamber 106.6, Flash FM and Dirty South Classics — plus podcasts, on-foot listening and a 34-track album out 19 November.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides" aria-current="page">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<article class="rec" id="article">
+
+  
+  <section class="rec-hero ">
+          <div class="rec-hero__bg"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/highway-vice-city-640.webp 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/highway-vice-city-1280.webp 1280w" sizes="100vw">
+    <img src="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/highway-vice-city-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/highway-vice-city-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/highway-vice-city-1280.jpg 1280w"
+       sizes="100vw" alt="Traffic on a busy Leonida highway with the Vice City skyline behind it, from Grand Theft Auto VI"
+               loading="eager" decoding="async" class="">
+</picture>
+</div>
+      <div class="rec-hero__scrim"></div>
+        <div class="rec-hero__inner">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/GTAIndex-Demo/guides">Guides</a> <span>/</span> <span aria-current="page">GTA 6 radio stations, podcasts and soundtrack album</span></nav>
+      <div class="rec-eyebrow">
+        <span class="chip">News</span>
+        <span class="chip">10 Oct 2026</span>      </div>
+      <h1 class="display rec-title">GTA 6 radio stations, podcasts and soundtrack album</h1>
+      <p class="rec-sub">Rockstar reveals six GTA VI radio stations — Cocoteo FM, Back Country Radio, AfroBank FM, The Chamber 106.6, Flash FM and Dirty South Classics — plus podcasts, on-foot listening and a 34-track album out 19 November.</p>    </div>
+  </section>
+
+  
+  <section class="section" style="padding-top:clamp(28px,4vw,48px)">
+    <div class="wrap article-wrap">
+      <div class="prose article-body reveal"><h2>The radio is back — and it's the biggest yet</h2>
+<p>On <strong>8 October 2026</strong> Rockstar detailed the first six of <strong>Grand Theft Auto VI's</strong> in-game radio stations, promising the biggest and widest-ranging selection of radio in the series — from classic rock to talk radio.</p>
+<p>Two firsts come with it:</p>
+<ul>
+<li><strong>Podcasts.</strong> For the first time, Jason and Lucia can listen to a series of <strong>on-demand podcasts</strong> alongside regular terrestrial radio.</li>
+<li><strong>Listen on foot.</strong> Radio and podcasts are no longer car-only: <strong>headphones and earbuds</strong> connected to their phones let them listen while walking.</li>
+</ul>
+<h2>The six stations revealed so far</h2>
+<ul>
+<li><strong>Cocoteo FM</strong> — modern Latin music, from bachata and merengue to dembow and reggaeton, hosted by <strong>El Martillo</strong> and <strong>La Gata</strong>.</li>
+<li><strong>Back Country Radio</strong> — outlaw country for the Grassrivers, Port Gellhorn and beyond, with hosts <strong>MW</strong> and <strong>Delta Dawne</strong>, plus roving reporter <strong>Mud Dog Mike</strong> calling in from his airboat.</li>
+<li><strong>AfroBank FM</strong> — African music from 20th-century classics to amapiano and 3-step, curated by <strong>Burna</strong> and <strong>Palmsy</strong>.</li>
+<li><strong>The Chamber 106.6</strong> — decades of metal with <strong>DJ Kerry</strong> and <strong>DJ Tom</strong>.</li>
+<li><strong>Flash FM</strong> — the Vice City pop institution returns, now hosted by <strong>Robyn</strong> and <strong>Alex</strong>.</li>
+<li><strong>Dirty South Classics</strong> — Southern rap and hip-hop classics with <strong>Trick</strong> and <strong>Trina</strong>.</li>
+</ul>
+<p>Previews of all six are on the Music section of Rockstar's official GTA VI site. Rockstar says more is coming, including details of the game's <strong>dynamic score</strong>.</p>
+<h2>GTA VI: The Album — 19 November</h2>
+<p>Announced on 17 September 2026, <strong>Grand Theft Auto VI: The Album</strong> is an official soundtrack made with <strong>Atlantic Records</strong>, launching <strong>19 November 2026</strong> alongside the game. It features <strong>34 original tracks</strong>. The first six singles are already streaming:</p>
+<ul>
+<li>Yung Lean — <em>That's It</em> (feat. Future &amp; Metro Boomin)</li>
+<li>Travis Scott — <em>RHYNO</em> (prod. by Guy-Manuel de Homem-Christo)</li>
+<li>CA7RIEL &amp; Paco Amoroso, PinkPantheress, Fred again.. &amp; Etienne de Crécy — <em>Sexy Magic</em></li>
+<li>Morgan Wallen — <em>Last Thing You Need</em></li>
+<li>Rauw Alejandro — <em>Macacoa 2000</em></li>
+<li>Keith Richards — <em>Bright Lights, Big City</em></li>
+</ul>
+<p>The album can be pre-saved on streaming services, with <strong>vinyl and CD</strong> editions available — including store-exclusive colourways at several retailers and three exclusives (a liquid-filled vinyl, a splatter vinyl and a CD jewel case) from the album's official site.</p>
+<h2>What we still don't know</h2>
+<p>Rockstar hasn't yet revealed the full station list, the names of any talk-radio hosts, or how the dynamic score works. We'll update this page as more is announced.</p>
+<p><em>Related: <a href="/GTAIndex-Demo/guides/gta-6-release-date-platforms-everything-we-know">GTA 6 release date and platforms</a> · <a href="/GTAIndex-Demo/guides/gta-6-vice-city-what-we-know">Vice City: everything we know</a>.</em></p>
+</div>
+
+              <p class="source">Source:
+          <a href="https://www.rockstargames.com/newswire/article/o3982oa93a23k4/the-music-of-grand-theft-auto-vi-in-game-radio-stations" rel="nofollow noopener" target="_blank">Rockstar Newswire: “The Music of Grand Theft Auto VI: In-Game Radio Stations” (8 Oct 2026) and “Announcing Grand Theft Auto VI: The Album” (17 Sep 2026).</a>        </p>
+            <p class="muted" style="font-size:13px">Last verified 10 Oct 2026.</p>    </div>
+
+          <div class="wrap rec-gallery reveal" style="margin-top:clamp(28px,4vw,44px)">
+        <span class="rec-eyebrow-h">Gallery</span>
+        <div class="gallery">
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/cocoteo-fm-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/cocoteo-fm-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/cocoteo-fm-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="Cocoteo FM radio station artwork: two halved coconuts with eyes and the station logo"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/back-country-radio-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/back-country-radio-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/back-country-radio-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="Back Country Radio artwork: a silhouetted guitarist on a boat surrounded by alligators"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/afrobank-fm-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/afrobank-fm-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/afrobank-fm-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="AfroBank FM radio station artwork in green, red and black"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/the-chamber-1066-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/the-chamber-1066-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/the-chamber-1066-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="The Chamber 106.6 metal station artwork: a skeleton holding a red guitar"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/flash-fm-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/flash-fm-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/flash-fm-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="Flash FM logo with a lightning bolt as the S"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                      <figure class="gitem"><picture>
+      <img src="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/dirty-south-classics-1280.jpg"
+       srcset="/GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/dirty-south-classics-640.jpg 640w, /GTAIndex-Demo/media/guides/gta-6-radio-stations-and-soundtrack/dirty-south-classics-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, (max-width:1100px) 50vw, 33vw" alt="Dirty South Classics artwork: a character showing off gold grills"
+               loading="lazy" decoding="async" class="">
+</picture>
+</figure>
+                  </div>
+      </div>
+      </section>
+</article>
+
+<style>
+  .read-progress{position:fixed;top:var(--header-h);left:0;height:3px;width:0;z-index:1200;
+    background:linear-gradient(90deg,var(--sunset-pink),var(--sun-gold));box-shadow:0 0 10px rgba(240,90,157,.5)}
+  .article-wrap{max-width:740px}
+  .article-body{font-size:clamp(1.02rem,1.15vw,1.14rem);line-height:1.75}
+  .article-body > p:first-of-type::first-letter{font-family:'Bebas Neue',Impact,sans-serif;
+    float:left;font-size:3.4em;line-height:.8;padding:6px 12px 0 0;color:var(--sun-gold)}
+  .article-body h2{font-size:clamp(1.4rem,2.4vw,1.9rem);margin:1.8em 0 .5em;letter-spacing:.005em}
+  .article-body h3{font-size:clamp(1.15rem,1.8vw,1.4rem);margin:1.5em 0 .4em}
+  .article-body blockquote{margin:1.4em 0;padding:2px 0 2px 20px;border-left:3px solid var(--sunset-pink);
+    font-size:1.08em;font-style:italic;color:var(--paper)}
+  .article-body img{border-radius:12px;margin:1.4em 0}
+  .article-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.4em 0;
+    font-size:.92em;line-height:1.5;-webkit-overflow-scrolling:touch}
+  .article-body th,.article-body td{padding:10px 14px;text-align:left;vertical-align:top;
+    border-bottom:1px solid rgba(255,255,255,.12)}
+  .article-body th{font-weight:800;color:var(--sun-gold);white-space:nowrap;border-bottom-color:rgba(255,255,255,.28)}
+  .article-body tbody tr:nth-child(odd){background:rgba(255,255,255,.035)}
+</style>
+
+
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script>
+    (function () {
+      var bar = document.getElementById('readProgress'), art = document.getElementById('article');
+      if (!bar || !art) return;
+      function upd() {
+        var r = art.getBoundingClientRect(), vh = window.innerHeight;
+        var scrolled = Math.min(Math.max(-r.top, 0), Math.max(r.height - vh, 1));
+        bar.style.width = (scrolled / Math.max(r.height - vh, 1) * 100).toFixed(1) + '%';
+      }
+      upd();
+      window.addEventListener('scroll', upd, { passive: true });
+      window.addEventListener('resize', upd, { passive: true });
+    })();
+  </script>
+</body>
+</html>

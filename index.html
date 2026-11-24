@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA 6 Map, Database &amp; Guides — GTAIndex · Fan Project demo</title>
+<meta name="description" content="The independent companion for Grand Theft Auto VI (GTA 6): an interactive Leonida map, a full database of characters, vehicles, weapons and items, sourced guides, and a 100% completion tracker.">
+<meta name="theme-color" content="#0B0612">
+<link rel="icon" type="image/svg+xml" href="/GTAIndex-Demo/assets/img/icon.svg">
+<link rel="stylesheet" href="/GTAIndex-Demo/assets/css/app.css">
+
+
+<script>try{if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('scrub-on')}catch(e){}</script>
+<script>
+/* GTAIndex live demo: stands in for the desktop app's local server */
+(function () {
+  var BASE = "/GTAIndex-Demo", K = 'gi_demo_state';
+  function load() { try { return JSON.parse(localStorage.getItem(K)) || {}; } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} }
+  var st = load(); st.data = st.data || {};
+  st.profile = st.profile || { id: 'demo', name: 'Demo player', color: '#FF3D8B', sharing: false, named: true };
+  window.GI_STATE = { data: st.data, profile: st.profile };
+  window.GI_DEMO = true;
+  function json(v, code) { return Promise.resolve(new Response(JSON.stringify(v), { status: code || 200, headers: { 'Content-Type': 'application/json' } })); }
+  var real = window.fetch.bind(window);
+  window.fetch = function (url, opt) {
+    var u = typeof url === 'string' ? url : (url && url.url) || '';
+    var i = u.indexOf(BASE + '/api/'); if (i < 0) return real(url, opt);
+    var api = u.slice(i + BASE.length + 5).split('?')[0], m = ((opt && opt.method) || 'GET').toUpperCase();
+    if (api === 'data') { if (m === 'PUT') { st.data = JSON.parse(opt.body || '{}'); save(st); return json({ ok: true }); } return json(st.data); }
+    if (api === 'profile') { if (m === 'PUT') { var p = JSON.parse(opt.body || '{}'); for (var k in p) st.profile[k] = p[k]; st.profile.named = true; save(st); } return json(st.profile); }
+    if (api === 'crew') return json({ me: st.profile, peers: [] });
+    if (api === 'export') return json({ app: 'GTAIndex', profile: st.profile, data: st.data });
+    if (api === 'ping' || api === 'hello') return json({ app: 'GTAIndex-demo' });
+    return json({ error: 'Crew sharing and file import need the GTAIndex desktop app.' }, 501);
+  };
+  // the desktop app serves a themed placeholder for any image that isn't in the media pack
+  var PH = BASE + '/assets/img/placeholder.svg';
+  addEventListener('error', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || t.dataset.ph) return;
+    t.dataset.ph = 1;
+    var pic = t.parentNode && t.parentNode.tagName === 'PICTURE' ? t.parentNode : null;
+    if (pic) pic.querySelectorAll('source').forEach(function (s) { s.remove(); });
+    t.removeAttribute('srcset'); t.src = PH;
+  }, true);
+})();
+</script><style>
+:root{--demo-h:32px}
+.gi-demo-banner{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:1400;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,#FF3D8B,#FF7A3D 55%,#FFC83D);color:#1A0710;font:600 13px/1 Manrope,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.gi-demo-banner b{flex:none;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#1A0710;color:#FFC83D;padding:4px 9px;border-radius:999px;font-size:11px}
+.gi-demo-banner span{overflow:hidden;text-overflow:ellipsis}
+.gi-demo-banner .short{display:none}
+@media (max-width:760px){.gi-demo-banner .long{display:none}.gi-demo-banner .short{display:inline}}
+body{padding-top:var(--demo-h)}
+.gi-hdr{top:var(--demo-h)!important}
+.gi-mnav.is-open{top:calc(var(--header-h) + var(--demo-h))!important}
+.maproot{height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+.scrub-on .gi-hero .home-hero__pin,.scrub-on .home-hero .home-hero__pin,.scrub-on .char-hero[data-scrub-box] .char-hero__pin{top:calc(var(--header-h) + var(--demo-h))!important;height:calc(100vh - var(--header-h) - var(--demo-h))!important}
+@media (max-width:1023px){.page-map .maproot{top:calc(var(--header-h) + var(--demo-h))!important}}
+#giQuit{display:none}
+.gi-demo-note{margin:0 0 18px;padding:14px 16px;border:1px solid rgba(47,227,211,.35);border-radius:12px;background:rgba(47,227,211,.08);color:#d9f7f3;font-size:14px}
+</style>
+<script src="/GTAIndex-Demo/assets/js/store.js"></script>
+</head>
+<body class="page-home">
+<div class="gi-demo-banner" role="note"><b>Fan Project</b><span class="long">Live demo of GTAIndex, an unofficial fan-made GTA VI field guide. Not affiliated with Rockstar Games or Take-Two Interactive.</span><span class="short">Unofficial · not made by Rockstar</span></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="gi-hdr" id="siteHeader">
+  <div class="wrap gi-hdr__in">
+    <a class="gi-brand" href="/" aria-label="GTAIndex home"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+    <nav class="gi-nav" aria-label="Primary">
+      <a href="/GTAIndex-Demo/map" data-route="map">Map</a>
+      <a href="/GTAIndex-Demo/database" data-route="database">Database</a>
+      <a href="/GTAIndex-Demo/collectibles" data-route="collectibles">Collectibles</a>
+      <a href="/GTAIndex-Demo/guides" data-route="guides">Guides</a>
+      <a href="/GTAIndex-Demo/discover" data-route="discover">Discover</a>
+      <a href="/GTAIndex-Demo/crew" data-route="crew">Crew</a>
+    </nav>
+    <form class="gi-search" action="/GTAIndex-Demo/search" role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" name="q" id="hdrSearch" placeholder="Search Leonida…" aria-label="Search" autocomplete="off">
+      <kbd>/</kbd>
+    </form>
+    <a class="gi-hbtn" href="/GTAIndex-Demo/crew" title="Crew online"><span class="gi-crewdot" id="crewDot"></span><span id="crewCount">Crew</span></a>
+    <a class="gi-hbtn gi-hbtn--hot" href="/GTAIndex-Demo/progress">My Progress</a>
+    <button type="button" class="gi-menu" id="menuOpen" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="gi-mnav" id="mobileMenu" aria-label="Menu">
+    <form action="/GTAIndex-Demo/search" role="search"><input type="search" name="q" placeholder="Search Leonida…" aria-label="Search"></form>
+    <a href="/GTAIndex-Demo/map">Map</a><a href="/GTAIndex-Demo/database">Database</a><a href="/GTAIndex-Demo/characters">Characters</a><a href="/GTAIndex-Demo/vehicles">Vehicles</a>
+    <a href="/GTAIndex-Demo/weapons">Weapons</a><a href="/GTAIndex-Demo/items">Items</a><a href="/GTAIndex-Demo/safehouses">Safehouses</a><a href="/GTAIndex-Demo/collectibles">Collectibles</a>
+    <a href="/GTAIndex-Demo/guides">Guides</a><a href="/GTAIndex-Demo/discover">Discover</a><a href="/GTAIndex-Demo/crew">Crew</a><a href="/GTAIndex-Demo/progress">My Progress</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  
+  
+    <section class="gi-hero home-hero" id="top" data-scrub-box aria-label="GTAIndex — your Leonida field guide">
+ <div class="home-hero__pin" data-scrub-pin>
+  <div class="gi-hero__art" aria-hidden="true">
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="hSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#140827"/><stop offset=".38" stop-color="#4A1660"/>
+          <stop offset=".62" stop-color="#C2306F"/><stop offset=".8" stop-color="#FF7A3D"/><stop offset="1" stop-color="#FFB547"/>
+        </linearGradient>
+        <linearGradient id="hSun" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#FFE27A"/><stop offset=".55" stop-color="#FF8A3D"/><stop offset="1" stop-color="#FF3D8B"/>
+        </linearGradient>
+        <linearGradient id="hSea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3B1250"/><stop offset="1" stop-color="#0B0612"/>
+        </linearGradient>
+        <clipPath id="hSunClip"><circle cx="1080" cy="560" r="230"/></clipPath>
+      </defs>
+      <rect width="1600" height="640" fill="url(#hSky)"/>
+      <g fill="#fff" opacity=".7">
+        <circle cx="180" cy="90" r="1.6"/><circle cx="420" cy="60" r="1.2"/><circle cx="640" cy="130" r="1.4"/><circle cx="300" cy="200" r="1"/>
+        <circle cx="900" cy="80" r="1.3"/><circle cx="1350" cy="70" r="1.6"/><circle cx="1500" cy="170" r="1.1"/><circle cx="1220" cy="150" r="1"/>
+      </g>
+      <g class="gi-hero__sun" clip-path="url(#hSunClip)">
+        <rect x="840" y="320" width="480" height="330" fill="url(#hSun)"/>
+        <g fill="#C2306F"><rect x="840" y="520" width="480" height="7"/><rect x="840" y="552" width="480" height="11"/><rect x="840" y="588" width="480" height="16"/><rect x="840" y="624" width="480" height="22"/></g>
+      </g>
+      <!-- skyline -->
+      <g fill="#1A0A2A">
+        <path d="M0 640V560h40v-30h30v40h26v-90h44v60h22v-120h50v150h30v-70h36v-40h40v110h28v-60h34v-160h18v-26h22v26h18v186h30v-90h40v50h30v-40h36v100z"/>
+        <path d="M720 640v-50h30v-120h46v80h30v-40h40v70h24v-30h40v90z"/>
+        <path d="M1330 640v-90h28v-60h40v40h22v-140h16v-20h14v20h16v170h30v-50h38v50h26v-30h40v110z"/>
+      </g>
+      <g fill="#FF3D8B" opacity=".75">
+        <rect x="378" y="430" width="6" height="4"/><rect x="392" y="450" width="6" height="4"/><rect x="384" y="470" width="6" height="4"/>
+        <rect x="160" y="500" width="6" height="4"/><rect x="226" y="470" width="6" height="4"/><rect x="1455" y="470" width="6" height="4"/>
+        <rect x="1440" y="500" width="6" height="4"/><rect x="775" y="520" width="6" height="4"/>
+      </g>
+      <!-- palms -->
+      <g fill="#120720">
+        <path d="M560 640c4-90 10-170 26-250l9 2c-14 80-20 160-22 248z"/>
+        <path d="M590 392c-40-30-96-28-130 0 40-8 78-2 128 8zm4 0c30-44 84-58 124-44-40 6-76 22-120 50zm-4 2c-20-50-62-74-104-74 34 16 62 42 100 80zm6-2c46-14 96 6 118 40-34-18-70-26-116-36zm-8 4c-50 6-84 40-90 78 24-32 54-54 92-74z"/>
+        <path d="M1500 640c-2-110 4-210 22-300l9 2c-16 92-22 190-20 298z"/>
+        <path d="M1526 342c-44-26-100-18-130 14 40-12 80-10 128-6zm4-2c26-46 78-66 120-56-38 10-72 30-116 62zm-4 2c-24-48-68-68-108-64 34 12 64 36 104 70zm6 0c46-10 94 12 114 48-32-20-68-30-112-44zm-8 4c-48 10-80 46-82 84 22-34 50-58 84-80z"/>
+      </g>
+      <rect y="640" width="1600" height="260" fill="url(#hSea)"/>
+      <g class="gi-hero__water" stroke="#FF8A3D" stroke-linecap="round">
+        <line x1="930" y1="660" x2="1230" y2="660" stroke-width="5"/><line x1="960" y1="685" x2="1200" y2="685" stroke-width="4"/>
+        <line x1="990" y1="712" x2="1170" y2="712" stroke-width="3"/><line x1="1020" y1="742" x2="1140" y2="742" stroke-width="2"/>
+      </g>
+      <g stroke="#2FE3D3" stroke-opacity=".18">
+        <path d="M0 700H1600M0 760H1600M0 840H1600" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+  <video id="heroClipVideo" class="scrub-video" data-scrub muted playsinline preload="none" poster="/GTAIndex-Demo/media/site/clips/jason-duval-poster.jpg" width="1920" height="1080" aria-label="Jason Duval — Grand Theft Auto VI">
+    <source src="/GTAIndex-Demo/media/site/clips/jason-duval-scrub.mp4" type="video/mp4">
+  </video>
+  <div class="home-hero__scrim"></div>
+  <aside class="release-countdown" aria-label="Grand Theft Auto VI release countdown">
+    <span class="release-countdown__label">GTA VI launches in</span>
+    <strong class="release-countdown__time" id="releaseCountdown" aria-live="polite">Loading&hellip;</strong>
+    <span class="release-countdown__date">19 NOV 2026</span>
+  </aside>
+  <div class="wrap gi-hero__inner home-hero__inner">
+    <span class="kicker"><span class="dot"></span> The GTA VI field guide</span>
+    <h1 class="gi-hero__title">GTA<span class="accent">INDEX</span></h1>
+    <p class="tagline">Explore Leonida. Track everything. Compare with your crew.</p>
+    <div class="actions">
+      <a href="/GTAIndex-Demo/map" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3Z"></path><path d="M9 3v15M15 6v15"></path></svg>
+        Explore the interactive map
+      </a>
+      <a href="/GTAIndex-Demo/database" class="btn btn-secondary">Browse the database</a>
+      <a href="/GTAIndex-Demo/crew" class="btn btn-secondary">Crew progress</a>
+    </div>
+  </div>
+ </div>
+</section>
+
+
+  
+  
+  <section class="section reveal" id="explore">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Explore Leonida</span>
+          <h2>Six regions, one state</h2>
+          <p>From the neon of Vice City to the wetlands of Grassrivers — start your exploration by region.</p>
+        </div>
+        <a href="/GTAIndex-Demo/map" class="link-arrow only-wide">Open full map</a>
+      </div>
+      <div class="rail" role="list" aria-label="Regions of Leonida">
+                  <a class="postcard" role="listitem" href="/GTAIndex-Demo/map/vice-city">
+                          <img src="/GTAIndex-Demo/media/postcards/vice_city.jpg" alt="Vice City region postcard" loading="lazy" width="600" height="400">
+                        <div class="postcard__grad"></div>
+            <div class="postcard__label">
+              <div class="meta">Neon coast</div>
+              <div class="name">Vice City</div>
+            </div>
+          </a>
+                  <a class="postcard" role="listitem" href="/GTAIndex-Demo/map/leonida-keys">
+                          <img src="/GTAIndex-Demo/media/postcards/leonida_keys.jpg" alt="Leonida Keys region postcard" loading="lazy" width="600" height="400">
+                        <div class="postcard__grad"></div>
+            <div class="postcard__label">
+              <div class="meta">Island chain</div>
+              <div class="name">Leonida Keys</div>
+            </div>
+          </a>
+                  <a class="postcard" role="listitem" href="/GTAIndex-Demo/map/grassrivers">
+                          <img src="/GTAIndex-Demo/media/postcards/grassrivers.jpg" alt="Grassrivers region postcard" loading="lazy" width="600" height="400">
+                        <div class="postcard__grad"></div>
+            <div class="postcard__label">
+              <div class="meta">Wetlands</div>
+              <div class="name">Grassrivers</div>
+            </div>
+          </a>
+                  <a class="postcard" role="listitem" href="/GTAIndex-Demo/map/port-gellhorn">
+                          <img src="/GTAIndex-Demo/media/postcards/port_gellhorn.jpg" alt="Port Gellhorn region postcard" loading="lazy" width="600" height="400">
+                        <div class="postcard__grad"></div>
+            <div class="postcard__label">
+              <div class="meta">Industrial north</div>
+              <div class="name">Port Gellhorn</div>
+            </div>
+          </a>
+                  <a class="postcard" role="listitem" href="/GTAIndex-Demo/map/ambrosia">
+                          <img src="/GTAIndex-Demo/media/postcards/ambrosia.jpg" alt="Ambrosia region postcard" loading="lazy" width="600" height="400">
+                        <div class="postcard__grad"></div>
+            <div class="postcard__label">
+              <div class="meta">Inland town</div>
+              <div class="name">Ambrosia</div>
+            </div>
+          </a>
+                  <a class="postcard" role="listitem" href="/GTAIndex-Demo/map/mount-kalaga">
+                          <img src="/GTAIndex-Demo/media/postcards/mount_kalaga.jpg" alt="Mount Kalaga National Park region postcard" loading="lazy" width="600" height="400">
+                        <div class="postcard__grad"></div>
+            <div class="postcard__label">
+              <div class="meta">National park</div>
+              <div class="name">Mount Kalaga National Park</div>
+            </div>
+          </a>
+              </div>
+    </div>
+  </section>
+
+  
+      <section class="section reveal" id="characters">
+      <div class="wrap">
+        <div class="section-head">
+          <div><span class="eyebrow">Database</span><h2>Meet the characters</h2><p>The people of Leonida — protagonists, crews, and the faces you’ll meet.</p></div>
+          <a href="/GTAIndex-Demo/characters" class="link-arrow only-wide">All characters</a>
+        </div>
+        <div class="charcards">
+                                  <a href="/GTAIndex-Demo/characters/jason-duval" class="charcard">
+              <div class="charcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/characters/jason-duval/jason_duval_01-640.webp 640w, /GTAIndex-Demo/media/characters/jason-duval/jason_duval_01-1280.webp 1280w" sizes="(max-width:700px) 50vw, 220px">
+    <img src="/GTAIndex-Demo/media/characters/jason-duval/jason_duval_01-1280.jpg"
+       srcset="/GTAIndex-Demo/media/characters/jason-duval/jason_duval_01-640.jpg 640w, /GTAIndex-Demo/media/characters/jason-duval/jason_duval_01-1280.jpg 1280w"
+       sizes="(max-width:700px) 50vw, 220px" alt="Jason Duval — Grand Theft Auto VI character, portrait"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="charcard__grad"></div>
+              <div class="charcard__label">
+                <span class="charcard__role">Protagonist</span>                <span class="charcard__name">Jason Duval</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/characters/lucia-caminos" class="charcard">
+              <div class="charcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/site/skydive/hero-640.webp 640w, /GTAIndex-Demo/media/site/skydive/hero-1280.webp 1280w" sizes="(max-width:700px) 50vw, 220px">
+    <img src="/GTAIndex-Demo/media/site/skydive/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/site/skydive/hero-640.jpg 640w, /GTAIndex-Demo/media/site/skydive/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 50vw, 220px" alt="Lucia skydives over Vice City in Grand Theft Auto VI"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="charcard__grad"></div>
+              <div class="charcard__label">
+                <span class="charcard__role">Protagonist</span>                <span class="charcard__name">Lucia Caminos</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/characters/boobie-ike" class="charcard">
+              <div class="charcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/characters/boobie-ike/boobie_ike_portrait-640.webp 640w, /GTAIndex-Demo/media/characters/boobie-ike/boobie_ike_portrait-1280.webp 1280w" sizes="(max-width:700px) 50vw, 220px">
+    <img src="/GTAIndex-Demo/media/characters/boobie-ike/boobie_ike_portrait-1280.jpg"
+       srcset="/GTAIndex-Demo/media/characters/boobie-ike/boobie_ike_portrait-640.jpg 640w, /GTAIndex-Demo/media/characters/boobie-ike/boobie_ike_portrait-1280.jpg 1280w"
+       sizes="(max-width:700px) 50vw, 220px" alt="Boobie Ike — Grand Theft Auto VI character, portrait"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="charcard__grad"></div>
+              <div class="charcard__label">
+                                <span class="charcard__name">Boobie Ike</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/characters/brian-heder" class="charcard">
+              <div class="charcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/characters/brian-heder/brian_heder_portrait-640.webp 640w, /GTAIndex-Demo/media/characters/brian-heder/brian_heder_portrait-1280.webp 1280w" sizes="(max-width:700px) 50vw, 220px">
+    <img src="/GTAIndex-Demo/media/characters/brian-heder/brian_heder_portrait-1280.jpg"
+       srcset="/GTAIndex-Demo/media/characters/brian-heder/brian_heder_portrait-640.jpg 640w, /GTAIndex-Demo/media/characters/brian-heder/brian_heder_portrait-1280.jpg 1280w"
+       sizes="(max-width:700px) 50vw, 220px" alt="Brian Heder — Grand Theft Auto VI character, portrait"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="charcard__grad"></div>
+              <div class="charcard__label">
+                                <span class="charcard__name">Brian Heder</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/characters/cal-hampton" class="charcard">
+              <div class="charcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/characters/cal-hampton/cal_hampton_portrait-640.webp 640w, /GTAIndex-Demo/media/characters/cal-hampton/cal_hampton_portrait-1280.webp 1280w" sizes="(max-width:700px) 50vw, 220px">
+    <img src="/GTAIndex-Demo/media/characters/cal-hampton/cal_hampton_portrait-1280.jpg"
+       srcset="/GTAIndex-Demo/media/characters/cal-hampton/cal_hampton_portrait-640.jpg 640w, /GTAIndex-Demo/media/characters/cal-hampton/cal_hampton_portrait-1280.jpg 1280w"
+       sizes="(max-width:700px) 50vw, 220px" alt="Cal Hampton — Grand Theft Auto VI character, portrait"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="charcard__grad"></div>
+              <div class="charcard__label">
+                                <span class="charcard__name">Cal Hampton</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/characters/drequan-priest" class="charcard">
+              <div class="charcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/characters/drequan-priest/drequan_priest_portrait-640.webp 640w, /GTAIndex-Demo/media/characters/drequan-priest/drequan_priest_portrait-1280.webp 1280w" sizes="(max-width:700px) 50vw, 220px">
+    <img src="/GTAIndex-Demo/media/characters/drequan-priest/drequan_priest_portrait-1280.jpg"
+       srcset="/GTAIndex-Demo/media/characters/drequan-priest/drequan_priest_portrait-640.jpg 640w, /GTAIndex-Demo/media/characters/drequan-priest/drequan_priest_portrait-1280.jpg 1280w"
+       sizes="(max-width:700px) 50vw, 220px" alt="DreQuan Priest — Grand Theft Auto VI character, portrait"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="charcard__grad"></div>
+              <div class="charcard__label">
+                                <span class="charcard__name">DreQuan Priest</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/characters/raul-bautista" class="charcard">
+              <div class="charcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/characters/raul-bautista/raul_bautista_portrait-640.webp 640w, /GTAIndex-Demo/media/characters/raul-bautista/raul_bautista_portrait-1280.webp 1280w" sizes="(max-width:700px) 50vw, 220px">
+    <img src="/GTAIndex-Demo/media/characters/raul-bautista/raul_bautista_portrait-1280.jpg"
+       srcset="/GTAIndex-Demo/media/characters/raul-bautista/raul_bautista_portrait-640.jpg 640w, /GTAIndex-Demo/media/characters/raul-bautista/raul_bautista_portrait-1280.jpg 1280w"
+       sizes="(max-width:700px) 50vw, 220px" alt="Raul Bautista — Grand Theft Auto VI character, portrait"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="charcard__grad"></div>
+              <div class="charcard__label">
+                                <span class="charcard__name">Raul Bautista</span>
+              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/characters/real-dimez" class="charcard">
+              <div class="charcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/characters/real-dimez/real_dimez_portrait-640.webp 640w, /GTAIndex-Demo/media/characters/real-dimez/real_dimez_portrait-1280.webp 1280w" sizes="(max-width:700px) 50vw, 220px">
+    <img src="/GTAIndex-Demo/media/characters/real-dimez/real_dimez_portrait-1280.jpg"
+       srcset="/GTAIndex-Demo/media/characters/real-dimez/real_dimez_portrait-640.jpg 640w, /GTAIndex-Demo/media/characters/real-dimez/real_dimez_portrait-1280.jpg 1280w"
+       sizes="(max-width:700px) 50vw, 220px" alt="Real Dimez — Grand Theft Auto VI character, portrait"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+              <div class="charcard__grad"></div>
+              <div class="charcard__label">
+                                <span class="charcard__name">Real Dimez</span>
+              </div>
+            </a>
+                  </div>
+      </div>
+    </section>
+  
+  
+      <section class="section">
+      <div class="wrap">
+        <div class="db-sec db-rev">
+    <div class="section-head">
+      <div><span class="eyebrow">Database</span><h2>Vehicles</h2></div>
+      <a href="/GTAIndex-Demo/vehicles" class="seeall">See all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="recordcards">
+                      <a href="/GTAIndex-Demo/vehicles/lead-asterope-gz" class="recordcard">
+          <div class="recordcard__img"></div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Sedan</span>            <span class="recordcard__name">Asterope GZ</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/vehicles/lead-gauntlet-interceptor" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/gauntlet-interceptor-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Gauntlet Interceptor"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Emergency</span>            <span class="recordcard__name">Gauntlet Interceptor</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/vehicles/lead-caracara-4x4" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/caracara-4x4-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Caracara 4x4"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">SUV</span>            <span class="recordcard__name">Caracara 4x4</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/vehicles/lead-jubilee" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/jubilee-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Jubilee"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Light Truck</span>            <span class="recordcard__name">Jubilee</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/vehicles/lead-bobcat-xl" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-640.webp 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/articles/gta-6-cars/list/bobcat-xl-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Bobcat XL"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Van</span>            <span class="recordcard__name">Bobcat XL</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/vehicles/lead-vapid-hustler" class="recordcard">
+          <div class="recordcard__img"></div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Muscle</span>            <span class="recordcard__name">Vapid Hustler</span>
+          </div>
+        </a>
+          </div>
+    <a href="/GTAIndex-Demo/vehicles" class="seeall-wide">See all  vehicles <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+        <div class="db-sec db-rev">
+    <div class="section-head">
+      <div><span class="eyebrow">Database</span><h2>Weapons</h2></div>
+      <a href="/GTAIndex-Demo/weapons" class="seeall">See all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="recordcards">
+                      <a href="/GTAIndex-Demo/weapons/lead-molotov-fire-bottle" class="recordcard">
+          <div class="recordcard__img"></div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Throwable</span>            <span class="recordcard__name">Molotov (fire bottle)</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/weapons/grenade" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14w4tkq31jg1v30vt97dh48/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Grenade"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Thrown</span>            <span class="recordcard__name">Grenade</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/weapons/lead-golf-club" class="recordcard">
+          <div class="recordcard__img"></div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Melee</span>            <span class="recordcard__name">Golf Club</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/weapons/assault-rifle" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14vw3pgnekxhf0dh9yy4hp6/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Assault Rifle"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Rifle</span>            <span class="recordcard__name">Assault Rifle</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/weapons/lead-sm-dw9" class="recordcard">
+          <div class="recordcard__img"></div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">SMG</span>            <span class="recordcard__name">S&amp;M DW9</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/weapons/lead-flashbang" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-640.webp 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-1280.jpg"
+       srcset="/GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-640.jpg 640w, /GTAIndex-Demo/media/gta-intel/weapons/gta-6/flashbangs-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Flashbang"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Throwable</span>            <span class="recordcard__name">Flashbang</span>
+          </div>
+        </a>
+          </div>
+    <a href="/GTAIndex-Demo/weapons" class="seeall-wide">See all  weapons <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+        <div class="db-sec db-rev">
+    <div class="section-head">
+      <div><span class="eyebrow">Database</span><h2>Items</h2></div>
+      <a href="/GTAIndex-Demo/items" class="seeall">See all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="recordcards">
+                      <a href="/GTAIndex-Demo/items/ecola" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14yj6zxwayp3rstrwzf8qcp/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="eCola"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Beverage</span>            <span class="recordcard__name">eCola</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/items/junk-energy" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/junk-energy/hero-640.webp 640w, /GTAIndex-Demo/media/items/junk-energy/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/junk-energy/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/junk-energy/hero-640.jpg 640w, /GTAIndex-Demo/media/items/junk-energy/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Junk Energy product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Energy drink</span>            <span class="recordcard__name">Junk Energy</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/items/meteorite-bar" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/meteorite-bar/hero-640.webp 640w, /GTAIndex-Demo/media/items/meteorite-bar/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/meteorite-bar/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/meteorite-bar/hero-640.jpg 640w, /GTAIndex-Demo/media/items/meteorite-bar/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Meteorite Bar product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Snack</span>            <span class="recordcard__name">Meteorite Bar</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/items/rusty-browns" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14z9ct51f5s29yeh91c5s8c/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Rusty Brown’s"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Fast food</span>            <span class="recordcard__name">Rusty Brown’s</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/items/epipen" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-640.webp 640w, /GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-1280.jpg"
+       srcset="/GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-640.jpg 640w, /GTAIndex-Demo/media/uploads/01m14xrc8nym48kp0etj2zb8rb/img-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="EpiPen"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Healing</span>            <span class="recordcard__name">EpiPen</span>
+          </div>
+        </a>
+                      <a href="/GTAIndex-Demo/items/raine" class="recordcard">
+          <div class="recordcard__img"><picture>
+      <source type="image/webp" srcset="/GTAIndex-Demo/media/items/raine/hero-640.webp 640w, /GTAIndex-Demo/media/items/raine/hero-1280.webp 1280w" sizes="(max-width:700px) 100vw, 33vw">
+    <img src="/GTAIndex-Demo/media/items/raine/hero-1280.jpg"
+       srcset="/GTAIndex-Demo/media/items/raine/hero-640.jpg 640w, /GTAIndex-Demo/media/items/raine/hero-1280.jpg 1280w"
+       sizes="(max-width:700px) 100vw, 33vw" alt="Raine product artwork"
+               loading="lazy" decoding="async" class="">
+</picture>
+</div>
+          <div class="recordcard__grad"></div>
+          <div class="recordcard__label">
+            <span class="recordcard__kind">Bottled water</span>            <span class="recordcard__name">Raine</span>
+          </div>
+        </a>
+          </div>
+    <a href="/GTAIndex-Demo/items" class="seeall-wide">See all  items <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+      </div>
+    </section>
+  
+  
+  <section class="section reveal" id="tracker">
+    <div class="wrap">
+      <div class="tracker-cta">
+        <div class="grid-2">
+          <div>
+            <span class="eyebrow">Your progress</span>
+            <h2>Track every location you clear</h2>
+            <p>Save places to visit, plan routes, and mark collectibles complete. Your progress is saved on this PC — and your crew can see it on the Crew page.</p>
+            <div class="meter" aria-hidden="true"><span id="homeProgressBar" style="width:0%"></span></div>
+            <div class="actions" style="display:flex;gap:14px;flex-wrap:wrap">
+              <a href="/GTAIndex-Demo/progress" class="btn btn-primary">Start tracking</a>
+              <a href="/GTAIndex-Demo/map" class="btn btn-secondary">Pick your first place</a>
+            </div>
+          </div>
+          <div>
+            <div class="panel">
+              <div style="font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--text-quiet-dark)">Completion snapshot</div>
+              <div style="display:flex;align-items:baseline;gap:10px;margin:8px 0 2px"><span class="display" id="homeProgressPct" style="font-size:44px;color:var(--sun-gold)">0%</span><span style="color:var(--text-quiet-dark);font-weight:700">of your list complete</span></div>
+              <p style="color:var(--text-quiet-dark);margin:6px 0 0;font-size:14px" id="homeProgressNote">Save locations, vehicles, weapons and collectibles as you go — your completed, planned and saved items all live on your progress page.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="section reveal" id="discoveries">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Discover</span>
+          <h2>Latest discoveries</h2>
+          <p>Verified finds, open mysteries, and community reports — every claim sourced and dated.</p>
+        </div>
+        <a href="/GTAIndex-Demo/discover" class="link-arrow only-wide">All discoveries</a>
+      </div>
+              <div class="collectgrid">
+                      <a href="/GTAIndex-Demo/discover/gta-6-goodtime-state-collectors-box" class="collectcard">
+              <span class="conf conf--verified">Verified</span>
+              <span class="collectcard__name">GTA VI Goodtime State collector’s box arrives November 19</span>
+              <span class="collectcard__sub">A limited Macca the Gator merch box — the game is sold separately.</span>            </a>
+                      <a href="/GTAIndex-Demo/discover/gta-6-merch-collection" class="collectcard">
+              <span class="conf conf--verified">Verified</span>
+              <span class="collectcard__name">The official GTA VI merch collection is out</span>
+              <span class="collectcard__sub">Tees, caps, a Vice City Zippo, money clip, keychain, totes and stickers.</span>            </a>
+                      <a href="/GTAIndex-Demo/discover/gta-6-single-player-at-launch" class="collectcard">
+              <span class="conf conf--verified">Verified</span>
+              <span class="collectcard__name">Rockstar calls GTA 6 a single-player experience</span>
+              <span class="collectcard__sub">No online mode has been announced for launch.</span>            </a>
+                      <a href="/GTAIndex-Demo/discover/gta-6-ps5-pro-enhanced" class="collectcard">
+              <span class="conf conf--verified">Verified</span>
+              <span class="collectcard__name">GTA 6 is PS5 Pro Enhanced</span>
+              <span class="collectcard__sub">PlayStation’s page carries the label; the improvements aren’t detailed yet.</span>            </a>
+                      <a href="/GTAIndex-Demo/discover/gta-6-code-region-lock" class="collectcard">
+              <span class="conf conf--verified">Verified</span>
+              <span class="collectcard__name">GTA 6 PlayStation codes are region-locked; Xbox codes aren’t</span>
+              <span class="collectcard__sub">Match your code to your PlayStation account’s region.</span>            </a>
+                      <a href="/GTAIndex-Demo/discover/gta-6-ultimate-upgrade-anytime" class="collectcard">
+              <span class="conf conf--verified">Verified</span>
+              <span class="collectcard__name">The GTA 6 Ultimate Edition Upgrade can be bought any time</span>
+              <span class="collectcard__sub">Standard owners can upgrade later, including boxed copies once redeemed.</span>            </a>
+                  </div>
+          </div>
+  </section>
+
+  
+  <section class="section reveal" id="guides-teaser">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Guides</span>
+          <h2>Practical, task-led guides</h2>
+          <p>Step-by-step help and systems explainers — written for players, checked against the game version.</p>
+        </div>
+        <a href="/GTAIndex-Demo/guides" class="link-arrow only-wide">All guides</a>
+      </div>
+              <div class="articlelist">
+                                  <a href="/GTAIndex-Demo/guides/gtabase-repair-jasons-house-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>How to repair Jason&#039;s house</h3>
+                <p>The optional four-repair task at the Key Lento house: how to do each repair, and why it can be missed.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-fast-travel-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>How to fast travel in GTA 6</h3>
+                <p>GTA 6 has no map fast travel. Here is how Paradise Taxi and RydeMe work, and what each one costs.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-day-one-in-leonida-guide" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>GTA 6 day one in Leonida</h3>
+                <p>What to do in your first hour: the opening sequence, the first missions, and habits for cash, cars and the phone.</p>              </div>
+            </a>
+                                  <a href="/GTAIndex-Demo/guides/gtabase-jasons-house-activities" class="articlecard">
+                            <div class="articlecard__body">
+                <span class="articlecard__kind">Article · 19 Nov 2026</span>
+                <h3>Activities in Jason&#039;s house</h3>
+                <p>Everything you can do at Jason&#039;s house in Chapter 1, from the gym and basketball to the wardrobe and the stash spot.</p>              </div>
+            </a>
+                  </div>
+          </div>
+  </section>
+
+  
+  <section class="section reveal" id="map-teaser">
+    <div class="wrap">
+      <div class="teaser">
+        <img src="/GTAIndex-Demo/media/TheMap.jpg" alt="Preview of the interactive Leonida map" loading="lazy">
+        <div class="teaser__overlay">
+          <span class="badge-note">Interactive map — live</span>
+          <div class="chips" aria-hidden="true">
+            <span class="chip"><span class="sw" style="background:var(--lagoon)"></span> Locations</span>
+            <span class="chip"><span class="sw" style="background:var(--sun-gold)"></span> Collectibles</span>
+            <span class="chip"><span class="sw" style="background:var(--sunset-pink)"></span> Missions</span>
+            <span class="chip"><span class="sw" style="background:var(--palm)"></span> Activities</span>
+          </div>
+          <div style="max-width:60ch;color:var(--paper)">Pan, zoom and filter Leonida by region and category, with clustered pins and a page for every landmark.</div>
+          <div><a href="/GTAIndex-Demo/map" class="btn btn-primary">Open full map</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="artbreak" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 640px)" srcset="/GTAIndex-Demo/media/cover_phone.jpg">
+      <source media="(min-width: 1600px)" srcset="/GTAIndex-Demo/media/cover_ultrawide.jpg">
+      <img src="/GTAIndex-Demo/media/cover_landscape.jpg" alt="" loading="lazy">
+    </picture>
+  </section>
+
+
+</main>
+<footer class="gi-ftr">
+  <div class="wrap">
+    <div class="gi-ftr__grid">
+      <div>
+        <a class="gi-brand" href="/"><img src="/GTAIndex-Demo/assets/img/icon.svg" alt=""><span>GTA<b>INDEX</b></span></a>
+        <p>Your offline field guide to Leonida — map, database, guides and a completion tracker you can share with your crew.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map">Interactive map</a></li><li><a href="/GTAIndex-Demo/database">Database</a></li>
+          <li><a href="/GTAIndex-Demo/characters">Characters</a></li><li><a href="/GTAIndex-Demo/vehicles">Vehicles</a></li>
+          <li><a href="/GTAIndex-Demo/weapons">Weapons</a></li><li><a href="/GTAIndex-Demo/items">Items</a></li>
+          <li><a href="/GTAIndex-Demo/safehouses">Safehouses</a></li><li><a href="/GTAIndex-Demo/collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Regions</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/map/vice-city">Vice City</a></li><li><a href="/GTAIndex-Demo/map/leonida-keys">Leonida Keys</a></li>
+          <li><a href="/GTAIndex-Demo/map/grassrivers">Grassrivers</a></li><li><a href="/GTAIndex-Demo/map/port-gellhorn">Port Gellhorn</a></li>
+          <li><a href="/GTAIndex-Demo/map/ambrosia">Ambrosia</a></li><li><a href="/GTAIndex-Demo/map/mount-kalaga">Mount Kalaga</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="/GTAIndex-Demo/progress">My Progress</a></li><li><a href="/GTAIndex-Demo/crew">Crew</a></li>
+          <li><a href="/GTAIndex-Demo/guides">Guides</a></li><li><a href="/GTAIndex-Demo/discover">Discover</a></li>
+          <li><a href="/GTAIndex-Demo/about">About &amp; credits</a></li>
+          <li><button type="button" class="linkish" id="giQuit">Quit GTAIndex</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="gi-ftr__fine">
+      <strong>Unofficial fan project.</strong> GTAIndex is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+      “Grand Theft Auto”, “GTA” and all related names, characters and marks belong to their respective owners.
+      Map tiles: community YANIS map via gtadb.org (CC BY 4.0). See <a href="/GTAIndex-Demo/about#credits">credits</a>.
+    </div>
+  </div>
+</footer>
+<div class="gi-toast" id="giToast" role="status" aria-live="polite"></div>
+
+<script src="/GTAIndex-Demo/assets/js/shell.js"></script>
+<script src="/GTAIndex-Demo/assets/js/progress.js"></script>
+<script>
+      (function () {
+        var output = document.getElementById('releaseCountdown');
+        if (!output) return;
+        var release = new Date('2026-11-19T00:00:00-05:00').getTime();
+        function render() {
+          var remaining = release - Date.now();
+          if (remaining <= 0) { output.textContent = 'OUT NOW'; return; }
+          var days = Math.floor(remaining / 86400000);
+          var hours = Math.floor((remaining % 86400000) / 3600000);
+          var minutes = Math.floor((remaining % 3600000) / 60000);
+          output.textContent = days + 'D ' + String(hours).padStart(2, '0') + 'H ' + String(minutes).padStart(2, '0') + 'M';
+        }
+        render();
+        window.setInterval(render, 30000);
+      })();
+    </script>
+<script src="/GTAIndex-Demo/assets/js/hero-scrub.js"></script>
+</body>
+</html>
